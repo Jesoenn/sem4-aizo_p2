@@ -64,3 +64,22 @@ void GraphAdjList::print() {
         std::cout<<std::endl;
     }
 }
+
+Edge* GraphAdjList::getEdgeArray() {
+    Edge* edgeArray = new Edge[edges];
+    int edgeIndex = 0;
+
+    for (int i=0; i < vertices; i++) {
+        Node* temp = adjList[i];
+        while(temp != nullptr) {
+             if (i<temp->vertex) {
+                 edgeArray[edgeIndex].from = i;
+                 edgeArray[edgeIndex].to = temp->vertex;
+                 edgeArray[edgeIndex].weight = temp->weight;
+                 edgeIndex++;
+             }
+            temp=temp->nextVertex;
+        }
+    }
+    return edgeArray;
+}

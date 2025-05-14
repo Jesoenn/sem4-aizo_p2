@@ -23,7 +23,6 @@ private:
     int* ranks;                         //
     Edge* edgeArray;
     Edge* mstArray;
-    GraphType graphType;
 
     void makeSet(int v);                //set parents for each vertex
     int findSet(int v);

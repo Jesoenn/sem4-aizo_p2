@@ -6,6 +6,7 @@
 #define PROJEKT2_AIZO_GRAPHADJLIST_H
 
 
+#include "Edge.h"
 #include "../enums/GraphDirection.h"
 #include "Node.h"
 
@@ -16,6 +17,7 @@ public:
 
     void addEdge(int vFrom, int vTo, int weight);
     void print();
+    Edge* getEdgeArray();
 
 private:
     void initialize();
