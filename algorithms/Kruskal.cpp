@@ -1,0 +1,88 @@
+//
+// Created by jakub on 2025-05-12.
+//
+
+#include <iostream>
+#include "Kruskal.h"
+#include "HeapSort.h"
+
+Kruskal::Kruskal(int vertices, int edges, Edge *edgeArray):
+    vertices(vertices),
+    edges(edges),
+    edgeArray(edgeArray){
+    mstArray = new Edge[vertices-1];
+    parents = new int[vertices];
+    ranks = new int[vertices];
+}
+
+void Kruskal::makeSet(int v) {
+    parents[v] = v;
+    ranks[v] = 0;
+}
+
+int Kruskal::findSet(int v) {
+    if(v != parents[v]){
+        parents[v] = findSet(parents[v]);
+    }
+    return parents[v];
+}
+
+void Kruskal::unionSets(int v1, int v2) {
+    int root1 = findSet(v1);
+    int root2 = findSet(v2);
+
+    if(ranks[root1]>ranks[root2]){
+        parents[root2]=root1;
+    } else{
+        parents[root1]=root2;
+        if(ranks[root1] == ranks[root2]){
+            ranks[root2]++;
+        }
+    }
+
+}
+
+void Kruskal::start() {
+    for(int i=0; i<vertices; i++){
+        makeSet(i);
+    }
+
+    //Sort edges
+    sortEdges();
+
+    int mstEdgeNum = 0;
+    for(int i=0; i<edges; i++){
+        int v1 = edgeArray[i].from;
+        int v2 = edgeArray[i].to;
+
+
+        if(findSet(v1)!= findSet(v2)){
+            mstArray[mstEdgeNum]=edgeArray[i];  //copy object
+            mstEdgeNum++;
+            unionSets(v1,v2);
+        }
+
+    }
+
+    for(int i =0; i<vertices-1;i++){
+        std::cout<<mstArray[i].from<<" -> "<<mstArray[i].to<<" : "<<mstArray[i].weight<<std::endl;
+    }
+
+}
+
+Kruskal::~Kruskal() {
+    std::cout<<"Kruskal destructor initiated...\n";
+    delete[] ranks;
+    std::cout<<"ranks deleted\n";
+    delete[] parents;
+    std::cout<<"parents deleted\n";
+    delete[] edgeArray;
+    std::cout<<"edge array deleted\n";
+    //Dont delete MST
+}
+
+void Kruskal::sortEdges() {
+    HeapSort heapSort(edgeArray,edges);
+    heapSort.sort();
+    std::cout<<heapSort.verify()<<std::endl;
+}
