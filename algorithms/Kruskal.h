@@ -8,8 +8,8 @@
 
 #include "../structures/Edge.h"
 #include "../enums/GraphType.h"
-#include "../structures/GraphAdjList.h"
-#include "../structures/GraphIncMatrix.h"
+#include "../structures/graphs/GraphAdjList.h"
+#include "../structures/graphs/GraphIncMatrix.h"
 
 class Kruskal {
 public:
