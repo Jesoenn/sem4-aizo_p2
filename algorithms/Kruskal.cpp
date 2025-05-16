@@ -31,6 +31,7 @@ void Kruskal::unionSets(int v1, int v2) {
     int root1 = findSet(v1);
     int root2 = findSet(v2);
 
+    //attach shorter set to longer
     if(ranks[root1]>ranks[root2]){
         parents[root2]=root1;
     } else{
@@ -43,11 +44,11 @@ void Kruskal::unionSets(int v1, int v2) {
 }
 
 void Kruskal::start() {
+    //For each vertex create set
     for(int i=0; i<vertices; i++){
         makeSet(i);
     }
-
-    //Sort edges
+    //Sort edges from smallest to largest weight
     sortEdges();
 
     int mstEdgeNum = 0;
@@ -55,9 +56,8 @@ void Kruskal::start() {
         int v1 = edgeArray[i].from;
         int v2 = edgeArray[i].to;
 
-
-        if(findSet(v1)!= findSet(v2)){
-            mstArray[mstEdgeNum]=edgeArray[i];  //copy object
+        if(findSet(v1)!= findSet(v2)){     //if 2 different sets, combine them
+            mstArray[mstEdgeNum]=edgeArray[i];   //copy object/add edge to MST
             mstEdgeNum++;
             unionSets(v1,v2);
         }
@@ -85,5 +85,5 @@ Kruskal::~Kruskal() {
 void Kruskal::sortEdges() {
     HeapSort heapSort(edgeArray,edges);
     heapSort.sort();
-    std::cout<<"HeapSort Verification: "<<heapSort.verify()<<std::endl;
+    //std::cout<<"HeapSort Verification: "<<heapSort.verify()<<std::endl;
 }

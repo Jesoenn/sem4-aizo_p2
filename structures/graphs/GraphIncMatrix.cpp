@@ -15,10 +15,10 @@ GraphIncMatrix::GraphIncMatrix(int edges, int vertices, GraphDirection graphDire
 
 GraphIncMatrix::~GraphIncMatrix() {
     std::cout<<"Matrix destructor initiated..."<<std::endl;
-    for(int i = 0; i<vertices; i++){   //rows
-        delete[] incMatrix[i];
+    for(int i = 0; i<vertices; i++){    //For each row
+        delete[] incMatrix[i];          //delete its column
     }
-    delete[] incMatrix;
+    delete[] incMatrix;                 //delete all rows
     incMatrix = nullptr;
     std::cout<<"Matrix deleted"<<std::endl;
 }
@@ -58,13 +58,16 @@ void GraphIncMatrix::print() {
     }
 }
 
+//This works only on Kruskal/Prim -> elements are always >0 row 71
 Edge* GraphIncMatrix::getEdgeArray() {
     Edge* edgeArray = new Edge[edges];
     for(int j = 0; j<edges; j++){       //column
-        int foundV = 0;
+        int foundV = 0;                 //which vertex is found
         for(int i=0; i<vertices; i++){  //row
             // save vertices in edge
             if(incMatrix[i][j]!=0){
+
+                //This "if" can be changed, so it works on directed graphs
                 if(foundV == 0){
                     edgeArray[j].from = i;
                     edgeArray[j].weight = incMatrix[i][j];  //undirected graph so weight is always positive
@@ -77,5 +80,9 @@ Edge* GraphIncMatrix::getEdgeArray() {
         }
     }
     return edgeArray;
+}
+
+int** GraphIncMatrix::getIncMatrix(){
+    return incMatrix;
 }
 

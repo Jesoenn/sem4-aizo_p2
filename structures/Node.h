@@ -9,7 +9,6 @@
 class Node {
 public:
     Node(int vertex, int weight);
-
     int vertex, weight;
     Node* nextVertex;
 };

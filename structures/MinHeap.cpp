@@ -26,7 +26,7 @@ void MinHeap::buildHeap() {
     for (int i = 0; i < originalSize; i++) {
         heap[i] = i;
         position[i] = i;
-        keys[i] = std::numeric_limits<int>::max();
+        keys[i] = std::numeric_limits<int>::max(); //in theory inf value
     }
     keys[0] = 0;
 }
@@ -59,28 +59,28 @@ void MinHeap::heapifyUp(int i) {
     }
 }
 
-//Returns vertex with min key
+//Returns vertex number which has min key
 int MinHeap::extractMin() {
     int min = heap[0];
     std::swap(position[heap[0]], position[heap[heapSize-1]]);   //swap positions of each vertex
-    std::swap(heap[0], heap[heapSize-1]);   //swap first and last heap element
+    std::swap(heap[0], heap[heapSize-1]);                       //swap first and last heap element
     heapSize--;
-    heapifyDown(0);                                 //heapify from root
+    heapifyDown(0);                                                 //heapify from root
 
     return min;
 }
 
-void MinHeap::setKey(int i, int weight) {
-    keys[i] = weight;
-    heapifyUp(position[i]);
+void MinHeap::setKey(int v, int weight) {
+    keys[v] = weight;
+    heapifyUp(position[v]); //in case key value (weight) is now smaller in child
 }
 
-int MinHeap::getKey(int i) {
-    return keys[i];
+int MinHeap::getKey(int v) {
+    return keys[v];
 }
 
-bool MinHeap::isInHeap(int i) {
-    return position[i] >= 0 && position[i] < heapSize;
+bool MinHeap::isInHeap(int v) {
+    return position[v] >= 0 && position[v] < heapSize;
 }
 
 bool MinHeap::isEmpty() {

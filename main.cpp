@@ -17,7 +17,8 @@ int main() {
     // Kruskal kruskal(4,6,test.getEdgeArray());
     // kruskal.start();
 
-    GraphAdjList list(7,5,GraphDirection::UNDIRECTED);
+//    GraphAdjList list(7,5,GraphDirection::UNDIRECTED);
+    GraphIncMatrix list(7,5,GraphDirection::DIRECTED);
     std::cout<<"\n\n";
     list.addEdge(0,1,2);
     list.addEdge(0,2,5);
@@ -29,11 +30,11 @@ int main() {
     std::cout<<"\n\n";
     list.print();
 
-    Kruskal kruskal(5,7,list.getEdgeArray());
-    kruskal.start();
+//    Kruskal kruskal(5,7,list.getEdgeArray());
+//    kruskal.start();
 
-    // Prim prim(5,7,list.getAdjList());
-    // prim.start();
+     Prim prim(5,7,list.getIncMatrix());
+     prim.start();
 
     return 0;
 }

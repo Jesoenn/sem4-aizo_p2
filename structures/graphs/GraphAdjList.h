@@ -16,7 +16,7 @@ public:
 
     void addEdge(int vFrom, int vTo, int weight);
     void print();
-    Edge* getEdgeArray();
+    Edge* getEdgeArray();   //convert list to edge array
     Node** getAdjList();
 
 private:
@@ -24,7 +24,7 @@ private:
 
     GraphDirection graphDirection;
     int edges, vertices;
-    Node** adjList;
+    Node** adjList;         //array, each index is vertex, each element is neighbouring edge
 };
 
 

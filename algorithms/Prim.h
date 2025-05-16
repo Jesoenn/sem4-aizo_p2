@@ -21,13 +21,15 @@ public:
 private:
     GraphType graphType;
     int vertices, edges;
-    int* parents;
+    int* parents;           //parent of each vertex
     Node** adjList;
     int** incMatrix;
     Edge* mstArray;
+    int mstEdges = 0;
 
     void adjListVersion(MinHeap& minHeap);
-
+    void incMatrixVersion(MinHeap& minHeap);
+    void addToMST(int u, int weight);
 };
 
 

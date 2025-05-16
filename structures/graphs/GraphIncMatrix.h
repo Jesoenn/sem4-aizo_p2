@@ -13,15 +13,15 @@ public:
     GraphIncMatrix(int edges, int vertices, GraphDirection graphDirection);
     ~GraphIncMatrix();
 
-    //Edge* getEdgeArray();   //Zwraca tablice wszystkich krawedzi
     void addEdge(int vFrom, int vTo, int weight);
-    Edge* getEdgeArray();
+    Edge* getEdgeArray();   //returns edge array of matrix
     void print();
+    int** getIncMatrix();
 
 private:
     void initialize();
 
-    int lastEdge;
+    int lastEdge;   //last added edge index
     GraphDirection graphDirection;
     int edges, vertices;
     int** incMatrix;

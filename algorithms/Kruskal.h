@@ -20,13 +20,13 @@ public:
 private:
     int vertices, edges;
     int* parents;                       //index is vertex, key is parent of each vertex
-    int* ranks;                         //
+    int* ranks;
     Edge* edgeArray;
     Edge* mstArray;
 
     void makeSet(int v);                //set parents for each vertex
-    int findSet(int v);
-    void unionSets(int v1, int v2);
+    int findSet(int v);                 //find root of given vertex
+    void unionSets(int v1, int v2);     //combine sets
 
     void sortEdges();                   //from lowest to highest weight
 };
