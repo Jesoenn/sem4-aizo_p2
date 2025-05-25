@@ -52,7 +52,7 @@ void Prim::start() {
 
 void Prim::adjListVersion(MinHeap& minHeap) {
     while (!minHeap.isEmpty()) {    //while heap is not empty
-        int u = minHeap.extractMin();   //visit vertex
+        int u = minHeap.extractMin();   //visit vertex with the lowest edge weight
         addToMST(u, minHeap.getKey(u)); //add edge to MST
 
         Node* v = adjList[u];
@@ -69,7 +69,7 @@ void Prim::adjListVersion(MinHeap& minHeap) {
 
 void Prim::incMatrixVersion(MinHeap &minHeap) {
     while(!minHeap.isEmpty()){
-        int u = minHeap.extractMin();   //visit vertex
+        int u = minHeap.extractMin();   //visit vertex with the lowest edge weight
         addToMST(u, minHeap.getKey(u)); //add edge to MST
 
         for(int i=0; i< edges; i++){    //iterate through columns (edges)
