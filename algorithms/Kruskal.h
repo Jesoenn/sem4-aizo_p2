@@ -16,6 +16,7 @@ public:
     Kruskal(int vertices, int edges, Edge* edgeArray);
     ~Kruskal();
     void start();
+    void print();
 
 private:
     int vertices, edges;

@@ -45,11 +45,12 @@ void Generator::start() {
     generateConnectedGraph();
     generateEdges();
 
-    // std::cout<<"\n\n\n\n";
-    // std::cout<<"EDGES: "<<edges<<std::endl<<std::endl;
-    // for (int i =0; i<currentEdge; i++) {
-    //     std::cout<<edgeArray[i].from <<" -> "<<edgeArray[i].to<<" | "<<edgeArray[i].weight<<std::endl;
-    // }
+    std::cout<<"\n\n\n\n";
+    std::cout<<"EDGES: "<<edges<<std::endl<<std::endl;
+    for (int i =0; i<currentEdge; i++) {
+        std::cout<<edgeArray[i].from <<" -> "<<edgeArray[i].to<<" | "<<edgeArray[i].weight<<std::endl;
+    }
+    std::cout<<"\n\n\n\n";
 }
 
 //generate Hamilton cycle
@@ -122,7 +123,7 @@ void Generator::generateEdges() {
         }
 
         // Check if edge exists in DIRECTED, in UNDIRECTED index positioning doesn't matter
-        if (adjMatrix[startVertex][endVertex] == true) {
+        if (adjMatrix[startVertex][endVertex]) {
             continue;
         }
 

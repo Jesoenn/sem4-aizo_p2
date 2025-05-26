@@ -3,6 +3,7 @@
 #include "algorithms/Prim.h"
 #include "core/FileManager.h"
 #include "core/Generator.h"
+#include "algorithms/Dijkstra.h"
 
 int main() {
     // GraphIncMatrix test(6,4,GraphDirection::UNDIRECTED);
@@ -19,18 +20,23 @@ int main() {
     // Kruskal kruskal(4,6,test.getEdgeArray());
     // kruskal.start();
 
-//    GraphAdjList list(7,5,GraphDirection::UNDIRECTED);
-    // GraphIncMatrix list(7,5,GraphDirection::DIRECTED);
-    // std::cout<<"\n\n";
-    // list.addEdge(0,1,2);
-    // list.addEdge(0,2,5);
-    // list.addEdge(0,3,4);
-    // list.addEdge(1,3,7);
-    // list.addEdge(2,3,1);
-    // list.addEdge(2,4,6);
-    // list.addEdge(3,4,3);
-    // std::cout<<"\n\n";
-    // list.print();
+//    GraphAdjList list(7,5,GraphDirection::DIRECTED);
+     GraphIncMatrix list(7,5,GraphDirection::DIRECTED);
+     std::cout<<"\n\n";
+     list.addEdge(0,1,1);
+     list.addEdge(1,2,1);
+     list.addEdge(0,3,10);
+     list.addEdge(1,3,1);
+     list.addEdge(1,4,10);
+     list.addEdge(2,4,1);
+     list.addEdge(3,4,10);
+     std::cout<<"\n\n";
+     list.print();
+
+     Dijkstra dijkstra(5,7,list.getIncMatrix());
+     dijkstra.start();
+     dijkstra.print();
+
 
 //    Kruskal kruskal(5,7,list.getEdgeArray());
 //    kruskal.start();
@@ -38,11 +44,12 @@ int main() {
      // Prim prim(5,7,list.getIncMatrix());
      // prim.start();
 
-    Generator generator(4,100,GraphDirection::DIRECTED);
-    generator.start();
 
-    FileManager fileManager("test.txt","","");
-    fileManager.readFile();
+//    Dijkstra dijkstra()
+
+
+//    FileManager fileManager("test.txt","","");
+//    fileManager.readFile();
 
     return 0;
 }

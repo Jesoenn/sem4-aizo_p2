@@ -8,7 +8,8 @@
 enum AlgorithmType{
     KRUSKAL,
     PRIM,
-    DIJKSTRA
+    DIJKSTRA,
+    BELLMAN_FORD
 };
 
 #endif //PROJEKT2_AIZO_ALGORITHMTYPE_H

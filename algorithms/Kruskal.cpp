@@ -63,12 +63,6 @@ void Kruskal::start() {
         }
 
     }
-
-    //TEMP PRINT
-    for(int i =0; i<vertices-1;i++){
-        std::cout<<mstArray[i].from<<" -> "<<mstArray[i].to<<" : "<<mstArray[i].weight<<std::endl;
-    }
-
 }
 
 Kruskal::~Kruskal() {
@@ -86,4 +80,14 @@ void Kruskal::sortEdges() {
     HeapSort heapSort(edgeArray,edges);
     heapSort.sort();
     //std::cout<<"HeapSort Verification: "<<heapSort.verify()<<std::endl;
+}
+
+void Kruskal::print() {
+    int cost = 0;
+    std::cout<<"\n\nKruskal MST:"<<std::endl;
+    for(int i =0; i<vertices-1;i++){
+        cost += mstArray[i].weight;
+        std::cout<<mstArray[i].from<<" -> "<<mstArray[i].to<<" : "<<mstArray[i].weight<<std::endl;
+    }
+    std::cout<<"Total cost: "<<cost<<std::endl;
 }

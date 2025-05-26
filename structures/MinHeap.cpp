@@ -3,10 +3,8 @@
 //
 
 #include "MinHeap.h"
-
 #include <iostream>
 #include <limits>
-#include <thread>
 
 MinHeap::MinHeap(int originalSize):
     heapSize(originalSize),
@@ -28,7 +26,7 @@ void MinHeap::buildHeap() {
         position[i] = i;
         keys[i] = std::numeric_limits<int>::max(); //in theory inf value
     }
-    keys[0] = 0;
+    keys[0] = 0;    //first vertex has weight of 0
 }
 
 void MinHeap::heapifyDown(int i) {

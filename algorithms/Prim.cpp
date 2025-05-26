@@ -43,11 +43,6 @@ void Prim::start() {
     } else if (graphType == GraphType::INCIDENCE_MATRIX) {
         incMatrixVersion(minHeap);
     }
-
-    //TEMP PRINT
-    for(int i =0; i<vertices-1;i++){
-        std::cout<<mstArray[i].from<<" -> "<<mstArray[i].to<<" : "<<mstArray[i].weight<<std::endl;
-    }
 }
 
 void Prim::adjListVersion(MinHeap& minHeap) {

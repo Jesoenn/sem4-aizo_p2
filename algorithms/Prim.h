@@ -17,6 +17,7 @@ public:
     Prim(int vertices, int edges, Node** adjList);
     ~Prim();
     void start();
+    void print();
 
 private:
     GraphType graphType;
