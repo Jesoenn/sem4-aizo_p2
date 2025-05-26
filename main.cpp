@@ -1,4 +1,6 @@
 #include <iostream>
+
+#include "algorithms/BellmanFord.h"
 #include "algorithms/Kruskal.h"
 #include "algorithms/Prim.h"
 #include "core/FileManager.h"
@@ -20,8 +22,8 @@ int main() {
     // Kruskal kruskal(4,6,test.getEdgeArray());
     // kruskal.start();
 
-//    GraphAdjList list(7,5,GraphDirection::DIRECTED);
-     GraphIncMatrix list(7,5,GraphDirection::DIRECTED);
+    GraphAdjList list(7,5,GraphDirection::DIRECTED);
+     // GraphIncMatrix list(7,5,GraphDirection::DIRECTED);
      std::cout<<"\n\n";
      list.addEdge(0,1,1);
      list.addEdge(1,2,1);
@@ -33,20 +35,18 @@ int main() {
      std::cout<<"\n\n";
      list.print();
 
-     Dijkstra dijkstra(5,7,list.getIncMatrix());
-     dijkstra.start();
-     dijkstra.print();
-
+     // Dijkstra dijkstra(5,7,list.getIncMatrix());
+     // dijkstra.start();
+     // dijkstra.print();
+    BellmanFord bellmanFord(5,7,list.getAdjList());
+    bellmanFord.start();
+    bellmanFord.print();
 
 //    Kruskal kruskal(5,7,list.getEdgeArray());
 //    kruskal.start();
 
      // Prim prim(5,7,list.getIncMatrix());
      // prim.start();
-
-
-//    Dijkstra dijkstra()
-
 
 //    FileManager fileManager("test.txt","","");
 //    fileManager.readFile();

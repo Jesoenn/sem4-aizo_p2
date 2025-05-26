@@ -8,7 +8,6 @@
 
 #include "../enums/GraphType.h"
 #include "../structures/Node.h"
-#include "../structures/Edge.h"
 
 class Dijkstra {
 public:
