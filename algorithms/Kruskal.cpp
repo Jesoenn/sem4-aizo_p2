@@ -79,7 +79,6 @@ Kruskal::~Kruskal() {
 void Kruskal::sortEdges() {
     HeapSort heapSort(edgeArray,edges);
     heapSort.sort();
-    //std::cout<<"HeapSort Verification: "<<heapSort.verify()<<std::endl;
 }
 
 void Kruskal::print() {

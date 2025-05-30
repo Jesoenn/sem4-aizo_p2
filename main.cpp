@@ -38,9 +38,9 @@ int main() {
      // Dijkstra dijkstra(5,7,list.getIncMatrix());
      // dijkstra.start();
      // dijkstra.print();
-    BellmanFord bellmanFord(5,7,list.getAdjList());
-    bellmanFord.start();
-    bellmanFord.print();
+//    BellmanFord bellmanFord(5,7,list.getAdjList());
+//    bellmanFord.start();
+//    bellmanFord.print();
 
 //    Kruskal kruskal(5,7,list.getEdgeArray());
 //    kruskal.start();
@@ -50,6 +50,9 @@ int main() {
 
 //    FileManager fileManager("test.txt","","");
 //    fileManager.readFile();
+
+    Generator generator(4,100,GraphDirection::UNDIRECTED);
+    generator.start();
 
     return 0;
 }

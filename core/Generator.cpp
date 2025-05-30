@@ -18,7 +18,7 @@ Generator::Generator(int vertices, int density, GraphDirection graphDirection):
         edges = static_cast<int>(vertices*(vertices-1)*(density/100.0));
     }
 
-    if (density>100 || edges<vertices) {
+    if (density>100 || edges<vertices-1) {
         throw std::invalid_argument("Wrong density");
     }
 
@@ -53,58 +53,42 @@ void Generator::start() {
     std::cout<<"\n\n\n\n";
 }
 
-//generate Hamilton cycle
 void Generator::generateConnectedGraph() {
-    int* edgesPlacement = new int[vertices];
-    int* keys = new int[vertices];      //each element i vertex number
-    int unvisited = vertices;
+    std::vector<int> visited;
+    std::vector<int> available;
+
+    visited.push_back(0);   //Start from vertex 0
+    for(int i = 1; i<vertices; i++){    //All vertices from 1 are available
+        available.push_back(i);
+    }
 
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> distWeight(1, 100);
 
-    for (int i =0 ;i<vertices;i++) {    //fill arrays
-        keys[i] = i;
-        edgesPlacement[i] = -1;
-    }
+    while(visited.size()<vertices){
+        std::uniform_int_distribution<int> distStart(0, static_cast<int>(visited.size()-1));
+        std::uniform_int_distribution<int> distEnd(0, static_cast<int>(available.size()-1));
+        int startIndex = distStart(gen);
+        int endIndex = distEnd(gen);
 
-    //generate edges
-    for (int i =0; i<vertices; i++) {
-        //generate unvisited vertex
-        std::uniform_int_distribution<int> distVertex(0, unvisited-1);
-        int endVertex = distVertex(gen);
-        edgesPlacement[i] = keys[endVertex];
-        std::swap(keys[endVertex], keys[unvisited-1]);
-        unvisited--;
-    }
+        int startVertex = visited.at(startIndex);
+        int endVertex = available.at(endIndex);
 
+        visited.push_back(endVertex);
+        available.erase(available.begin()+endIndex);
 
-    // Add edge
-    edgeArray[0].to = edgesPlacement[0];
-    edgeArray[0].from = edgesPlacement[vertices-1];
-    edgeArray[0].weight = distWeight(gen);
-    currentEdge++;
-
-    adjMatrix[edgeArray[0].from][edgeArray[0].to] = true;
-    if (graphDirection == GraphDirection::UNDIRECTED) {
-        adjMatrix[edgeArray[0].to][edgeArray[0].from] = true;
-    }
-
-    //add edges to edge array and bool adj matrix
-    for (int i =1; i<vertices; i++) {
-        edgeArray[i].from = edgesPlacement[i-1];
-        edgeArray[i].to = edgesPlacement[i];
-        edgeArray[i].weight = distWeight(gen);
+        // Add edge
+        edgeArray[currentEdge].to = endVertex;
+        edgeArray[currentEdge].from = startVertex;
+        edgeArray[currentEdge].weight = distWeight(gen);
         currentEdge++;
 
-        adjMatrix[edgeArray[i].from][edgeArray[i].to] = true;
+        adjMatrix[startVertex][endVertex] = true;
         if (graphDirection == GraphDirection::UNDIRECTED) {
-            adjMatrix[edgeArray[i].to][edgeArray[i].from] = true;
+            adjMatrix[endVertex][startVertex] = true;
         }
     }
-
-    delete[] edgesPlacement;
-    delete[] keys;
 }
 
 void Generator::generateEdges() {
