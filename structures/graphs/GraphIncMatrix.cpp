@@ -13,15 +13,15 @@ GraphIncMatrix::GraphIncMatrix(int edges, int vertices, GraphDirection graphDire
     initialize();
 }
 
-GraphIncMatrix::~GraphIncMatrix() {
-    std::cout<<"Matrix destructor initiated..."<<std::endl;
-    for(int i = 0; i<vertices; i++){    //For each row
-        delete[] incMatrix[i];          //delete its column
-    }
-    delete[] incMatrix;                 //delete all rows
-    incMatrix = nullptr;
-    std::cout<<"Matrix deleted"<<std::endl;
-}
+// GraphIncMatrix::~GraphIncMatrix() {
+//     std::cout<<"Matrix destructor initiated..."<<std::endl;
+//     for(int i = 0; i<vertices; i++){    //For each row
+//         delete[] incMatrix[i];          //delete its column
+//     }
+//     delete[] incMatrix;                 //delete all rows
+//     incMatrix = nullptr;
+//     std::cout<<"Matrix deleted"<<std::endl;
+// }
 
 void GraphIncMatrix::initialize() {
     incMatrix = new int*[vertices];         //rows

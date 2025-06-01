@@ -13,6 +13,8 @@ public:
     Generator(int vertices, int density, GraphDirection graphDirection);
     ~Generator();
     void start();
+    Edge* getEdges();
+    int getEdgeCount();
 
 private:
     int vertices, edges, currentEdge;

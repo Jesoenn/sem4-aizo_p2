@@ -11,7 +11,7 @@
 class GraphIncMatrix {
 public:
     GraphIncMatrix(int edges, int vertices, GraphDirection graphDirection);
-    ~GraphIncMatrix();
+    // ~GraphIncMatrix();
 
     void addEdge(int vFrom, int vTo, int weight);
     Edge* getEdgeArray();   //returns edge array of matrix

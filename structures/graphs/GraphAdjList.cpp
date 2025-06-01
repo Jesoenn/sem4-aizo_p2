@@ -12,20 +12,20 @@ GraphAdjList::GraphAdjList(int edges, int vertices, GraphDirection graphDirectio
     adjList = nullptr;
     initialize();
 }
-GraphAdjList::~GraphAdjList() {
-    std::cout<<"Adjacency list destructor initiated..."<<std::endl;
-    for(int i = 0; i<vertices; i++){    //for each vertex
-        Node* temp = adjList[i];        //first neighbour
-        while(temp != nullptr){         //delete each neighbour starting from first
-            Node* next = temp->nextVertex;
-            delete temp;
-            temp = next;
-        }
-    }
-    delete[] adjList;                   //delete array (vertices)
-    adjList = nullptr;
-    std::cout<<"Adjacency list deleted"<<std::endl;
-}
+// GraphAdjList::~GraphAdjList() {
+//     std::cout<<"Adjacency list destructor initiated..."<<std::endl;
+//     for(int i = 0; i<vertices; i++){    //for each vertex
+//         Node* temp = adjList[i];        //first neighbour
+//         while(temp != nullptr){         //delete each neighbour starting from first
+//             Node* next = temp->nextVertex;
+//             delete temp;
+//             temp = next;
+//         }
+//     }
+//     delete[] adjList;                   //delete array (vertices)
+//     adjList = nullptr;
+//     std::cout<<"Adjacency list deleted"<<std::endl;
+// }
 
 void GraphAdjList::initialize() {
     adjList = new Node*[vertices];      //create array, each index is vertex

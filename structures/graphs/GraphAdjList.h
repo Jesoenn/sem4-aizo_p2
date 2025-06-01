@@ -12,7 +12,7 @@
 class GraphAdjList {
 public:
     GraphAdjList(int edges, int vertices, GraphDirection graphDirection);
-    ~GraphAdjList();
+    //~GraphAdjList();
 
     void addEdge(int vFrom, int vTo, int weight);
     void print();

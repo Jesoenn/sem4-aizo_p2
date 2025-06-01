@@ -7,52 +7,51 @@
 #include "core/Generator.h"
 #include "algorithms/Dijkstra.h"
 
-int main() {
-    // GraphIncMatrix test(6,4,GraphDirection::UNDIRECTED);
-    //
-    // test.addEdge(0,1,1);
-    // test.addEdge(1,2,3);
-    // test.addEdge(1,2,2);
-    // test.addEdge(2,3,4);
-    // test.addEdge(0,1,14214);
-    // test.addEdge(0,3,1);
-    //
-    // test.print();
-    //
-    // Kruskal kruskal(4,6,test.getEdgeArray());
-    // kruskal.start();
+int main(int argc, char* argv[]) {
+    std::string mode = argv[1];
+    // BENCHMARK mode
+    //projekt2_aizo.exe --test <graph> <algorithm> <vertices> <density> <outputfile>
+    if (mode == "--test") {
+        if (argc != 7) {
+            std::cout<<"\nBENCHMARK MODE:"<<std::endl;
+            std::cout<<"\tUsage:"<<std::endl<<"\tprojekt2_aizo.exe --test <graph> <algorithm> <vertices> <density> <outputfile>"<<std::endl;
+            std::cout<<"\n\t<graph>\tGraph representation (0 - Incidence matrix, 1 - Adjacency list)."<<std::endl;
+            std::cout<<"\n\t<algorithm>\tAlgorithm to use (0 - Kruskal, 1 - Prim, 2 - Dijkstra, 3 - Bellman-Ford)."<<std::endl;
+            std::cout<<"\t<vertices>\t\tNumber of elements to generate (vertices)."<<std::endl;
+            std::cout<<"\t<density>\t\tPercentage of edges (between 1 and 100)."<<std::endl;
+            std::cout<<"\t<outputfile>\tWrites Algorithms details in given file."<<std::endl;
+            return 1;
+        }
 
-    GraphAdjList list(7,5,GraphDirection::DIRECTED);
-     // GraphIncMatrix list(7,5,GraphDirection::DIRECTED);
-     std::cout<<"\n\n";
-     list.addEdge(0,1,1);
-     list.addEdge(1,2,1);
-     list.addEdge(0,3,10);
-     list.addEdge(1,3,1);
-     list.addEdge(1,4,10);
-     list.addEdge(2,4,1);
-     list.addEdge(3,4,10);
-     std::cout<<"\n\n";
-     list.print();
+        //Input data
+        int graph = std::stoi(argv[2]);
+        int algorithm = std::stoi(argv[3]);
+        int vertices = std::stoi(argv[4]);
+        int density = std::stoi(argv[5]);
+        std::string outputFile = argv[6];
 
-     // Dijkstra dijkstra(5,7,list.getIncMatrix());
-     // dijkstra.start();
-     // dijkstra.print();
-//    BellmanFord bellmanFord(5,7,list.getAdjList());
-//    bellmanFord.start();
-//    bellmanFord.print();
+        if (graph < 0 || graph > 1) {
+            throw std::invalid_argument("ERROR: Wrong graph");
+        }
+        if (algorithm < 0 || algorithm > 3) {
+            throw std::invalid_argument("ERROR: Wrong algorithm");
+        }
+        if (vertices <= 2) {
+            throw std::invalid_argument("ERROR: Must use more than 2 vertices");
+        }
 
-//    Kruskal kruskal(5,7,list.getEdgeArray());
-//    kruskal.start();
+        if (density < 1 || density > 100) {
+            throw std::invalid_argument("ERROR: Density value must be between 1 and 100");
+        }
 
-     // Prim prim(5,7,list.getIncMatrix());
-     // prim.start();
 
-//    FileManager fileManager("test.txt","","");
-//    fileManager.readFile();
 
-    Generator generator(4,100,GraphDirection::UNDIRECTED);
-    generator.start();
+
+    } else if (mode == "--file") {
+
+    } else {
+        throw std::invalid_argument("ERROR: Wrong mode.");
+    }
 
     return 0;
 }

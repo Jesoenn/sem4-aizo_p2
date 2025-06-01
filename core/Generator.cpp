@@ -53,6 +53,14 @@ void Generator::start() {
     std::cout<<"\n\n\n\n";
 }
 
+Edge * Generator::getEdges() {
+    return edgeArray;
+}
+
+int Generator::getEdgeCount() {
+    return edges;
+}
+
 void Generator::generateConnectedGraph() {
     std::vector<int> visited;
     std::vector<int> available;
