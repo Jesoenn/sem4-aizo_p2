@@ -23,17 +23,22 @@ public:
 private:
     GraphType graphType;
     AlgorithmType algorithm;
-    int vertices;
+    int vertices,edges;
     int density;
     std::string outputFile;
 
     Timer timer;
+    int time;
     int algorithmTime;
 
-    int** generateIncMatrix(GraphDirection graphDirection);
-    Node** generateAdjList(GraphDirection graphDirection);
-    void startMST();            // Kruskal/Prim
-    void startPath();           // Dijkstra/Bellman-Ford
+    Edge* generateEdges(GraphDirection graphDirection);
+    int** generateIncMatrix(Edge* edgeArray, GraphDirection graphDirection);
+    Node** generateAdjList(Edge* edgeArray, GraphDirection graphDirection);
+    void performKruskal(Edge* edgeArray);
+    void performPrim(int** incMatrix, Node** adjList);            // Kruskal/Prim
+    void performDijkstra(int** incMatrix, Node** adjList);
+    void performBellmanFord(int** incMatrix, Node** adjList);
+    void deleteGraph(int** incMatrix, Node** adjList);
 
 };
 

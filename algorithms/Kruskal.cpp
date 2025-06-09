@@ -52,11 +52,24 @@ void Kruskal::start() {
     sortEdges();
 
     int mstEdgeNum = 0;
+    int interval = (vertices-1)/20;    //every interval (5%) print % of performed algorithm
+    int progress = 5;
+
     for(int i=0; i<edges; i++){
+        // MST is completed
+        if (mstEdgeNum == vertices - 1) {
+            break;
+        }
+
         int v1 = edgeArray[i].from;
         int v2 = edgeArray[i].to;
 
         if(findSet(v1)!= findSet(v2)){     //if 2 different sets, combine them
+            if (mstEdgeNum!=0 && vertices>=20 && mstEdgeNum%interval == 0 && progress <= 100) {
+                std::cout<<"Kruskal progress: "<<progress<<"%"<<std::endl;
+                progress+=5;
+            }
+
             mstArray[mstEdgeNum]=edgeArray[i];   //copy object/add edge to MST
             mstEdgeNum++;
             unionSets(v1,v2);
@@ -73,7 +86,7 @@ Kruskal::~Kruskal() {
     std::cout<<"parents deleted\n";
     delete[] edgeArray;
     std::cout<<"edge array deleted\n";
-    //Dont delete MST
+    delete[] mstArray;
 }
 
 void Kruskal::sortEdges() {

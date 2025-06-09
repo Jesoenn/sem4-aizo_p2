@@ -41,9 +41,19 @@ void BellmanFord::start() {
 }
 
 void BellmanFord::adjListVersion() {
+    //Progress bar
+    int interval = vertices/20;
+    int progress = 5;               // every 5%
+
     bool cycleChanged;
     //vertices - 1 iterations of bellman ford
     for(int i=0; i<vertices-1; i++){
+        //Progress bar
+        if (i!=0 && vertices>=20 && i%interval == 0) {
+            std::cout<<"BellmanFord progress: "<<progress<<"%"<<std::endl;
+            progress+=5;
+        }
+
         cycleChanged = false;
         for(int u=0; u<vertices; u++){  //for each vertex and its neighbours
             Node* currentVertex = adjList[u];
@@ -58,11 +68,22 @@ void BellmanFord::adjListVersion() {
             break;
         }
     }
+    std::cout<<"BellmanFord progress: 100%"<<std::endl;
 }
 
 void BellmanFord::incMatrixVersion() {
+    //Progress bar
+    int interval = vertices/20;
+    int progress = 5;               // every 5%
+
     bool cycleChanged;
     for(int i=0; i<vertices-1; i++) {
+        //Progress bar
+        if (i!=0 && vertices>=20 && i%interval == 0) {
+            std::cout<<"BellmanFord progress: "<<progress<<"%"<<std::endl;
+            progress+=5;
+        }
+
         cycleChanged = false;
         for(int edge=0; edge<edges; edge++) {
             int u=-1,v=-1,weight=0;
@@ -89,6 +110,7 @@ void BellmanFord::incMatrixVersion() {
             break;
         }
     }
+    std::cout<<"BellmanFord progress: 100%"<<std::endl;
 }
 
 void BellmanFord::initializeSingleSource() {

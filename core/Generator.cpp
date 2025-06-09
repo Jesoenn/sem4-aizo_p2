@@ -45,12 +45,12 @@ void Generator::start() {
     generateConnectedGraph();
     generateEdges();
 
-    std::cout<<"\n\n\n\n";
-    std::cout<<"EDGES: "<<edges<<std::endl<<std::endl;
-    for (int i =0; i<currentEdge; i++) {
-        std::cout<<edgeArray[i].from <<" -> "<<edgeArray[i].to<<" | "<<edgeArray[i].weight<<std::endl;
-    }
-    std::cout<<"\n\n\n\n";
+    // std::cout<<"\n\n\n\nGENERATOR\n";
+    // std::cout<<"EDGES: "<<edges<<std::endl<<std::endl;
+    // for (int i =0; i<currentEdge; i++) {
+    //     std::cout<<edgeArray[i].from <<" -> "<<edgeArray[i].to<<" | "<<edgeArray[i].weight<<std::endl;
+    // }
+    // std::cout<<"\n\n\n\n";
 }
 
 Edge * Generator::getEdges() {

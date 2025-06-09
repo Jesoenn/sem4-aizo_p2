@@ -21,7 +21,7 @@ public:
 
 private:
     GraphType graphType;
-    int vertices, edges;
+    int vertices, edges, interval, progress;
     int* parents;           //parent of each vertex
     Node** adjList;
     int** incMatrix;

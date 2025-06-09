@@ -7,10 +7,12 @@
 Prim::Prim(int vertices, int edges, int **incMatrix):
     vertices(vertices),
     edges(edges),
+    progress(5),
     incMatrix(incMatrix),
     graphType(GraphType::INCIDENCE_MATRIX),
     adjList(nullptr),
     mstEdges(0){
+    interval = (vertices - 1)/20;
     parents = new int[vertices];
     mstArray = new Edge[vertices-1];
 }
@@ -18,16 +20,19 @@ Prim::Prim(int vertices, int edges, int **incMatrix):
 Prim::Prim(int vertices, int edges, Node **adjList):
     vertices(vertices),
     edges(edges),
+    progress(5),
     adjList(adjList),
     graphType(GraphType::ADJACENCY_LIST),
     incMatrix(nullptr),
     mstEdges(0){
+    interval = (vertices - 1)/20;
     parents = new int[vertices];
     mstArray = new Edge[vertices-1];
 }
 
 Prim::~Prim() {
     delete[] parents;
+    delete[] mstArray;
 }
 
 
@@ -47,6 +52,11 @@ void Prim::start() {
 
 void Prim::adjListVersion(MinHeap& minHeap) {
     while (!minHeap.isEmpty()) {    //while heap is not empty
+        // MST is completed
+        if (mstEdges == vertices - 1) {
+            break;
+        }
+
         int u = minHeap.extractMin();   //visit vertex with the lowest edge weight
         addToMST(u, minHeap.getKey(u)); //add edge to MST
 
@@ -64,6 +74,11 @@ void Prim::adjListVersion(MinHeap& minHeap) {
 
 void Prim::incMatrixVersion(MinHeap &minHeap) {
     while(!minHeap.isEmpty()){
+        // MST is completed
+        if (mstEdges == vertices - 1) {
+            break;
+        }
+
         int u = minHeap.extractMin();   //visit vertex with the lowest edge weight
         addToMST(u, minHeap.getKey(u)); //add edge to MST
 
@@ -74,7 +89,7 @@ void Prim::incMatrixVersion(MinHeap &minHeap) {
                         continue;
                     }else if (incMatrix[j][i] != 0){
                         int v = j;
-                        int weight = (incMatrix[j][i]>0) ? incMatrix[j][i] : -incMatrix[j][i];  //weight >0
+                        int weight = std::abs(incMatrix[j][i]);
                         if(minHeap.isInHeap(v) && weight<minHeap.getKey(v)){
                             parents[v] = u;
                             minHeap.setKey(v,weight);
@@ -88,6 +103,11 @@ void Prim::incMatrixVersion(MinHeap &minHeap) {
 
 void Prim::addToMST(int u, int weight) {
     if (parents[u] != -1) {
+        if (mstEdges!=0 && vertices>=20 && mstEdges%interval == 0 && progress <= 100) {
+            std::cout<<"Prim progress: "<<progress<<"%"<<std::endl;
+            progress+=5;
+        }
+
         // Add edge to MST
         mstArray[mstEdges].from = parents[u];
         mstArray[mstEdges].to = u;
@@ -98,7 +118,7 @@ void Prim::addToMST(int u, int weight) {
 
 void Prim::print() {
     int cost = 0;
-    std::cout<<"\n\nKruskal MST:"<<std::endl;
+    std::cout<<"\n\nPrim MST:"<<std::endl;
     for(int i =0; i<vertices-1;i++){
         cost += mstArray[i].weight;
         std::cout<<mstArray[i].from<<" -> "<<mstArray[i].to<<" : "<<mstArray[i].weight<<std::endl;

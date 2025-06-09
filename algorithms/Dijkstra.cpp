@@ -55,8 +55,19 @@ void Dijkstra::adjListVersion() {
     MinHeap minHeap = MinHeap(vertices);
     minHeap.buildHeap();
 
+    //Progress bar
+    int visitedCount = 0;
+    int interval = vertices/20;
+    int progress = 5;               // every 5%
+
     while(!minHeap.isEmpty()){
         int u = minHeap.extractMin();
+
+        visitedCount++;
+        if (visitedCount!=0 && vertices>=20 && visitedCount%interval == 0 && progress<=100) {
+            std::cout<<"Dijkstra progress: "<<progress<<"%"<<std::endl;
+            progress+=5;
+        }
 
         //For each adjacent vertex
         Node* currentV = adjList[u];
@@ -73,8 +84,19 @@ void Dijkstra::incMatrixVersion() {
     MinHeap minHeap = MinHeap(vertices);
     minHeap.buildHeap();
 
+    //Progress bar
+    int visitedCount = 0;
+    int interval = vertices/20;
+    int progress = 5;               // every 5%
+
     while(!minHeap.isEmpty()){
         int u = minHeap.extractMin();
+
+        visitedCount++;
+        if (visitedCount!=0 && vertices>=20 && visitedCount%interval == 0 && progress<=100) {
+            std::cout<<"Dijkstra progress: "<<progress<<"%"<<std::endl;
+            progress+=5;
+        }
 
         //For each adjacent vertex
         for(int currentEdge = 0; currentEdge<edges; currentEdge++){

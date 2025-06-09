@@ -85,3 +85,38 @@ int FileManager::getVerticesCount() {
     file.close();
     return verticesCount;
 }
+
+void FileManager::saveData(AlgorithmType algorithm, GraphType graphType, int vertices, int density, int time) {
+    std::ofstream file(saveDataFileName, std::ios::app);
+    if (!file.is_open()) {
+        std::cout << "Cannot open/create data file." << std::endl;
+        return;
+    }
+
+    //Algorytm | Graf | wierzcholki | gestosc | czas
+    file << toString(algorithm) << "\t"
+    <<  toString(graphType) << "\t"
+    << vertices << "\t"
+    << density << "\t"
+    << time << std::endl;
+
+    file.close();
+}
+
+std::string FileManager::toString(AlgorithmType algorithm) {
+    switch (algorithm) {
+        case AlgorithmType::PRIM: return "PRIM";
+        case AlgorithmType::KRUSKAL: return "KRUSKAL";
+        case AlgorithmType::DIJKSTRA: return "DIJKSTRA";
+        case AlgorithmType::BELLMAN_FORD: return "BELLMAN_FORD";
+        default: return "INVALID";
+    }
+}
+
+std::string FileManager::toString(GraphType graphType) {
+    switch (graphType) {
+        case GraphType::ADJACENCY_LIST: return "ADJACENCY_LIST";
+        case GraphType::INCIDENCE_MATRIX: return "INCIDENCE_MATRIX";
+        default: return "INVALID";
+    }
+}
