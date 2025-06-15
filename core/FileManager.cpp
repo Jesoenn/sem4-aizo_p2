@@ -103,6 +103,20 @@ void FileManager::saveData(AlgorithmType algorithm, GraphType graphType, int ver
     file.close();
 }
 
+void FileManager::saveResult(int vertices, int edges, Edge *edgeArray) {
+    std::ofstream file(outputFileName);
+    if (!file.is_open()) {
+        std::cout << "Cannot open/create data file." << std::endl;
+        return;
+    }
+    file<<edges<<"\t"<<vertices<<std::endl;
+    for (int i = 0; i < edges; i++) {
+        file<<edgeArray[i].from<<"\t"<<edgeArray[i].to<<"\t"<<edgeArray[i].weight<<std::endl;
+    }
+
+    file.close();
+}
+
 std::string FileManager::toString(AlgorithmType algorithm) {
     switch (algorithm) {
         case AlgorithmType::PRIM: return "PRIM";

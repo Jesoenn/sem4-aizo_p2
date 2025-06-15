@@ -17,6 +17,7 @@ public:
     int getEdgeCount();
 
 private:
+    //int startingVertex;
     int vertices, edges, currentEdge;
     GraphDirection graphDirection;
     Edge* edgeArray;

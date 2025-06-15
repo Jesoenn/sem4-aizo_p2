@@ -17,6 +17,8 @@ public:
     ~Kruskal();
     void start();
     void print();
+    Edge* getAnswerEdges();
+    int getAnswerSize();
 
 private:
     int vertices, edges;

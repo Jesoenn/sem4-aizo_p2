@@ -35,4 +35,6 @@ add_executable(projekt2_aizo main.cpp
         core/FileManager.h
         modes/Benchmark.cpp
         modes/Benchmark.h
+        modes/FileTest.cpp
+        modes/FileTest.h
 )

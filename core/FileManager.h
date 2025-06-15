@@ -20,6 +20,7 @@ public:
     int getEdgeCount();
     int getVerticesCount();
     void saveData(AlgorithmType algorithm, GraphType graphType, int vertices, int density, int time);
+    void saveResult(int vertices, int edges, Edge* edgeArray);
 
     //Zapisac -> ALGORYTM TYPGRAFU WIERZCHOLKI DENSITY CZAS
 

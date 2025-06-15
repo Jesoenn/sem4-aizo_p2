@@ -51,6 +51,7 @@ void GraphAdjList::addEdge(int vFrom, int vTo, int weight) {
 }
 
 void GraphAdjList::print() {
+    std::cout<<"\n\nADJACENCY LIST GRAPH REPRESENTATION\n";
     for(int i=0; i<vertices; i++){
         std::cout<<i<<": ";
         Node* temp = adjList[i];
@@ -58,11 +59,12 @@ void GraphAdjList::print() {
             std::cout<<temp->vertex<<" ["<<temp->weight<<"]";
             temp = temp->nextVertex;
             if(temp != nullptr){
-                std::cout<<" -> ";
+                std::cout<<" ->\t";
             }
         }
         std::cout<<std::endl;
     }
+    std::cout<<"\n\n";
 }
 
 Edge* GraphAdjList::getEdgeArray() {

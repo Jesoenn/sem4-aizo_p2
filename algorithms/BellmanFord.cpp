@@ -137,3 +137,41 @@ void BellmanFord::print() {
         std::cout<<"Vertex: "<<i<<"\tWeight: "<<weights[i]<<"\tParent: "<<parent[i]<<std::endl;
     }
 }
+
+Edge * BellmanFord::getPath(int startV, int endV, bool print) {
+    int currentV = endV;                                            //start from last
+    int pathLength = getPathLength(startV, endV);
+    Edge* pathArray = new Edge[pathLength];
+
+    if (print) {
+        std::cout<<"\n\nShortest path (read from bottom):\n";
+    }
+
+    for (int i = pathLength-1; i >= 0; i--) {                       //from last array element to first
+        int weight = weights[currentV]-weights[parent[currentV]];
+        pathArray[i].from = parent[currentV];
+        pathArray[i].to = currentV;
+        pathArray[i].weight = weight;
+        currentV=parent[currentV];
+        if (print) {
+            std::cout<<pathArray[i].from<<" ->\t"<<pathArray[i].to<<" ["<<pathArray[i].weight<<"]"<<std::endl;
+        }
+    }
+    if (print) {
+        std::cout<<"Total cost: "<<weights[endV]-weights[startV]<<std::endl;
+    }
+    return pathArray;
+}
+
+int BellmanFord::getPathLength(int startV, int endV) {
+    int currentV = endV;
+    int pathLength = 0;
+
+    //Calculate path length for path array elements
+    while (currentV != startV && currentV >= 0 && currentV < vertices) {
+        currentV = parent[currentV];
+        pathLength++;
+    }
+
+    return pathLength;
+}

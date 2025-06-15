@@ -8,6 +8,7 @@
 
 #include "../structures/Node.h"
 #include "../enums/GraphType.h"
+#include "../structures/Edge.h"
 
 class BellmanFord {
 public:
@@ -16,6 +17,8 @@ public:
     ~BellmanFord();
     void start();
     void print();
+    Edge* getPath(int startV, int endV, bool print);
+    int getPathLength(int startV, int endV);
 private:
     void initializeSingleSource();
     void incMatrixVersion();

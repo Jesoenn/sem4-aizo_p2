@@ -50,12 +50,14 @@ void GraphIncMatrix::addEdge(int vFrom, int vTo, int weight) {
 }
 
 void GraphIncMatrix::print() {
+    std::cout<<"\n\nINCIDENCE MATRIX GRAPH REPRESENTATION\n";
     for(int i = 0; i<vertices; i++){
         for(int j = 0; j<edges; j++){
-            std::cout<<incMatrix[i][j]<<" ";
+            std::cout<<incMatrix[i][j]<<"\t";
         }
         std::cout<<std::endl;
     }
+    std::cout<<"\n\n";
 }
 
 //This works only on Kruskal/Prim -> elements are always >0 row 71

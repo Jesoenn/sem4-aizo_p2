@@ -7,6 +7,7 @@
 
 
 #include "../enums/GraphType.h"
+#include "../structures/Edge.h"
 #include "../structures/Node.h"
 
 class Dijkstra {
@@ -16,6 +17,8 @@ public:
     ~Dijkstra();
     void start();
     void print();
+    Edge* getPath(int startV, int endV, bool print);
+    int getPathLength(int startV, int endV);
 
 private:
     void initializeSingleSource();
@@ -28,7 +31,6 @@ private:
 
     Node** adjList;
     int** incMatrix;
-//    Edge* mstArray;
 
     int* parent;    // pi
     int* weights;   // d

@@ -18,6 +18,8 @@ public:
     ~Prim();
     void start();
     void print();
+    Edge* getAnswerEdges();
+    int getAnswerSize();
 
 private:
     GraphType graphType;

@@ -1,25 +1,29 @@
 //
-// Created by jakub on 30.05.2025.
+// Created by jakub on 15.06.2025.
 //
 
-#include "Benchmark.h"
+#include "FileTest.h"
 
-#include <stdexcept>
+#include <iostream>
 #include <utility>
 
 #include "../algorithms/BellmanFord.h"
 #include "../algorithms/Dijkstra.h"
 #include "../algorithms/Kruskal.h"
 #include "../algorithms/Prim.h"
-#include "../core/Generator.h"
+#include "../core/FileManager.h"
+#include "../enums/GraphDirection.h"
 #include "../structures/graphs/GraphAdjList.h"
 #include "../structures/graphs/GraphIncMatrix.h"
 
-Benchmark::Benchmark(int graph, int algorithm, int vertices, int density, std::string outputFile, int printGraph):
-    vertices(vertices),
-    density(density),
-    outputFile(std::move(outputFile)){
-
+FileTest::FileTest(int graph, int algorithm, std::string inputFile, int printAnswer, std::string outputFile,int startVertex, int endVertex):
+    inputFile(std::move(inputFile)),
+    outputFile(std::move(outputFile)),
+    startVertex(startVertex),
+    endVertex(endVertex),
+    vertices(-1),
+    edges(-1),
+    time(-1){
     switch (graph) {
         case 0: graphType = GraphType::INCIDENCE_MATRIX; break;
         case 1: graphType = GraphType::ADJACENCY_LIST; break;
@@ -34,15 +38,18 @@ Benchmark::Benchmark(int graph, int algorithm, int vertices, int density, std::s
         default: throw std::invalid_argument("ERROR: Wrong algorithm.");
     }
 
-    switch (printGraph) {
-        case 0: this->printGraph = false; break;
-        case 1: this->printGraph = true; break;
+    switch (printAnswer) {
+        case 0: this->printAnswer = false; break;
+        case 1: this->printAnswer = true; break;
         default: throw std::invalid_argument("ERROR: Printing value can be either 0 or 1.");
     }
 }
 
-void Benchmark::start() {
-    FileManager fileManager("","",outputFile);  //save algorithm data
+void FileTest::start() {
+    FileManager fileManager(inputFile,outputFile,"");   //Read graph, save graph
+    edges = fileManager.getEdgeCount(); //get total edges
+    vertices = fileManager.getVerticesCount();  //get total vertices
+    Edge* edgeArray = fileManager.readFile();   //get edges
 
     GraphDirection graphDirection;
     if (algorithm == AlgorithmType::KRUSKAL || algorithm == AlgorithmType::PRIM) {      //MST problem
@@ -50,12 +57,15 @@ void Benchmark::start() {
     } else {        //Shortest path problem
         graphDirection = GraphDirection::DIRECTED;
     }
-    Edge* edgeArray = generateEdges(graphDirection);    //Generate edge array, that is used to create graphs
+
+    int answerEdges=0;                                   //MST/Path edge count
+    Edge* answerEdgeArray;                              //MST/Path edge array
+
     int** incMatrix = nullptr;                          //Incidence matrix
     Node** adjList = nullptr;                           //Adjacency list
 
     if ( algorithm == AlgorithmType::KRUSKAL) {
-        performKruskal(edgeArray);              // Kruskal needs Graph class to get edge array (other algorithms don't)
+        answerEdgeArray=performKruskal(edgeArray, answerEdges);              // Kruskal needs Graph class to get edge array (other algorithms don't)
     } else {
         //Generate specific graph
         if (graphType == GraphType::INCIDENCE_MATRIX) {
@@ -65,26 +75,19 @@ void Benchmark::start() {
         }
 
         switch (algorithm) {
-            case AlgorithmType::PRIM: performPrim(incMatrix, adjList); break;
-            case AlgorithmType::DIJKSTRA: performDijkstra(incMatrix, adjList); break;
-            case AlgorithmType::BELLMAN_FORD: performBellmanFord(incMatrix, adjList); break;
+            case AlgorithmType::PRIM: answerEdgeArray = performPrim(incMatrix, adjList, answerEdges); break;
+            case AlgorithmType::DIJKSTRA: answerEdgeArray = performDijkstra(incMatrix, adjList, answerEdges); break;
+            case AlgorithmType::BELLMAN_FORD: answerEdgeArray = performBellmanFord(incMatrix, adjList, answerEdges); break;
             default: throw std::invalid_argument("ERROR: Wrong algorithm.");
         }
     }
 
-    fileManager.saveData(algorithm, graphType, vertices, density, time);    //save algorithm data to file
+    fileManager.saveResult(vertices, answerEdges, answerEdgeArray);
+    delete[] answerEdgeArray;
     deleteGraph(incMatrix, adjList);                                        //free allocated memory
 }
 
-Edge* Benchmark::generateEdges(GraphDirection graphDirection) {
-    std::cout<<"Generating edges..."<<std::endl;
-    Generator generator(vertices, density, graphDirection);
-    generator.start();
-    edges = generator.getEdgeCount();   //Edge number
-    return generator.getEdges();
-}
-
-int ** Benchmark::generateIncMatrix(Edge* edgeArray, GraphDirection graphDirection) {
+int ** FileTest::generateIncMatrix(Edge *edgeArray, GraphDirection graphDirection) {
     GraphIncMatrix graphIncMatrix(edges, vertices, graphDirection);
     std::cout<<"Generating incidence matrix..."<<std::endl;
     for (int i =0; i < edges; i++) {
@@ -92,14 +95,10 @@ int ** Benchmark::generateIncMatrix(Edge* edgeArray, GraphDirection graphDirecti
     }
     delete[] edgeArray; //Free memory from generated edges
 
-    if (printGraph) {
-        graphIncMatrix.print();
-    }
-
     return graphIncMatrix.getIncMatrix();
 }
 
-Node ** Benchmark::generateAdjList(Edge* edgeArray, GraphDirection graphDirection) {
+Node ** FileTest::generateAdjList(Edge *edgeArray, GraphDirection graphDirection) {
     GraphAdjList graphAdjList(edges, vertices, graphDirection);
     std::cout<<"Generating adjacency list..."<<std::endl;
     for (int i =0; i < edges; i++) {
@@ -107,16 +106,13 @@ Node ** Benchmark::generateAdjList(Edge* edgeArray, GraphDirection graphDirectio
     }
     delete[] edgeArray; //Free memory from generated edges
 
-    if (printGraph) {
-        graphAdjList.print();
-    }
-
     return graphAdjList.getAdjList();
 }
 
-void Benchmark::performKruskal(Edge *edgeArray) {
+Edge* FileTest::performKruskal(Edge *edgeArray, int &answerEdges) {
+    Edge* answerEdgeArray=nullptr;
     if (graphType == GraphType::INCIDENCE_MATRIX) {
-        //Create graph from generated edges
+        //Create graph edges
         GraphIncMatrix graphIncMatrix(edges, vertices, GraphDirection::UNDIRECTED);
         std::cout<<"Generating incidence matrix..."<<std::endl;
         for (int i =0; i < edges; i++) {
@@ -124,19 +120,19 @@ void Benchmark::performKruskal(Edge *edgeArray) {
         }
         delete[] edgeArray; //Free memory from generated edges
 
-        if (printGraph) {
-            graphIncMatrix.print();
-        }
-
         //Perform algorithm
         timer.start();
         Kruskal kruskal(vertices,edges,graphIncMatrix.getEdgeArray());
         kruskal.start();
         timer.stop();
-        //kruskal.print();
+        if (printAnswer) {
+            kruskal.print();
+        }
         time = timer.result();
+        answerEdges = kruskal.getAnswerSize();      //get MST size
+        answerEdgeArray = kruskal.getAnswerEdges(); //get MST edge array
     } else {
-        //Create graph from generated edges
+        //Create graph from edges
         GraphAdjList graphAdjList(edges, vertices, GraphDirection::UNDIRECTED);
         std::cout<<"Generating adjacency list..."<<std::endl;
         for (int i =0; i < edges; i++) {
@@ -144,29 +140,36 @@ void Benchmark::performKruskal(Edge *edgeArray) {
         }
         delete[] edgeArray; //Free memory from generated edges
 
-        if (printGraph) {
-            graphAdjList.print();
-        }
-
         //Perform algorithm
         timer.start();
         Kruskal kruskal(vertices,edges,graphAdjList.getEdgeArray());
         kruskal.start();
         timer.stop();
-        //kruskal.print();
+        if (printAnswer) {
+            kruskal.print();
+        }
         time = timer.result();
+        answerEdges = kruskal.getAnswerSize();      //get MST size
+        answerEdgeArray = kruskal.getAnswerEdges(); //get MST edge array
     }
+
+    return answerEdgeArray;
 }
 
-void Benchmark::performPrim(int **incMatrix, Node **adjList) {
+Edge* FileTest::performPrim(int **incMatrix, Node **adjList, int &answerEdges) {
+    Edge* answerEdgeArray=nullptr;
     // Incidence matrix version
     if (incMatrix != nullptr) {
         Prim prim(vertices,edges,incMatrix);
         timer.start();
         prim.start();
         timer.stop();
-        //prim.print();
+        if (printAnswer) {
+            prim.print();
+        }
         time = timer.result();
+        answerEdges = prim.getAnswerSize();      //get MST size
+        answerEdgeArray = prim.getAnswerEdges(); //get MST edge array
     }
     // Adjacency list version
     else {
@@ -174,20 +177,30 @@ void Benchmark::performPrim(int **incMatrix, Node **adjList) {
         timer.start();
         prim.start();
         timer.stop();
-        //prim.print();
+        if (printAnswer) {
+            prim.print();
+        }
         time = timer.result();
+        answerEdges = prim.getAnswerSize();      //get MST size
+        answerEdgeArray = prim.getAnswerEdges(); //get MST edge array
     }
+    return answerEdgeArray;
 }
 
-void Benchmark::performDijkstra(int **incMatrix, Node **adjList) {
+Edge * FileTest::performDijkstra(int **incMatrix, Node **adjList, int &answerEdges) {
+    Edge* answerEdgeArray=nullptr;
     // incidence matrix version
     if (incMatrix != nullptr) {
         Dijkstra dijkstra(vertices,edges,incMatrix);
         timer.start();
         dijkstra.start();
         timer.stop();
-        //dijkstra.print();
+        if (printAnswer) {
+            dijkstra.print();
+        }
         time = timer.result();
+        answerEdges = dijkstra.getPathLength(startVertex,endVertex);
+        answerEdgeArray = dijkstra.getPath(startVertex,endVertex, printAnswer);
     }
     // Adjacency list version
     else {
@@ -195,20 +208,30 @@ void Benchmark::performDijkstra(int **incMatrix, Node **adjList) {
         timer.start();
         dijkstra.start();
         timer.stop();
-        //dijkstra.print();
+        if (printAnswer) {
+            dijkstra.print();
+        }
         time = timer.result();
+        answerEdges = dijkstra.getPathLength(startVertex,endVertex);
+        answerEdgeArray = dijkstra.getPath(startVertex,endVertex, printAnswer);
     }
+    return answerEdgeArray;
 }
 
-void Benchmark::performBellmanFord(int **incMatrix, Node **adjList) {
+Edge * FileTest::performBellmanFord(int **incMatrix, Node **adjList, int &answerEdges) {
+    Edge* answerEdgeArray=nullptr;
     // incidence matrix version
     if (incMatrix != nullptr) {
         BellmanFord bellmanFord(vertices, edges, incMatrix);
         timer.start();
         bellmanFord.start();
         timer.stop();
-        //bellmanFord.print();
+        if (printAnswer) {
+            bellmanFord.print();
+        }
         time = timer.result();
+        answerEdges = bellmanFord.getPathLength(startVertex,endVertex);
+        answerEdgeArray = bellmanFord.getPath(startVertex,endVertex,printAnswer);
     }
     // Adjacency list version
     else {
@@ -216,12 +239,17 @@ void Benchmark::performBellmanFord(int **incMatrix, Node **adjList) {
         timer.start();
         bellmanFord.start();
         timer.stop();
-        //bellmanFord.print();
+        if (printAnswer) {
+            bellmanFord.print();
+        }
         time = timer.result();
+        answerEdges = bellmanFord.getPathLength(startVertex,endVertex);
+        answerEdgeArray = bellmanFord.getPath(startVertex,endVertex,printAnswer);
     }
+    return answerEdgeArray;
 }
 
-void Benchmark::deleteGraph(int** incMatrix, Node** adjList) {
+void FileTest::deleteGraph(int **incMatrix, Node **adjList) {
     if (incMatrix != nullptr) {
         for(int i = 0; i<vertices; i++){    //For each row
             delete[] incMatrix[i];          //delete its column
@@ -239,4 +267,3 @@ void Benchmark::deleteGraph(int** incMatrix, Node** adjList) {
         delete[] adjList;                   //delete array (vertices)
     }
 }
-

@@ -123,5 +123,19 @@ void Prim::print() {
         cost += mstArray[i].weight;
         std::cout<<mstArray[i].from<<" -> "<<mstArray[i].to<<" : "<<mstArray[i].weight<<std::endl;
     }
-    std::cout<<"Total cost: "<<cost<<std::endl;
+    std::cout<<"\nTotal cost: "<<cost<<std::endl;
+}
+
+Edge * Prim::getAnswerEdges() {
+    //Copy mst array because it will be deleted in destructor
+    Edge* mstArrayCopy = new Edge[vertices-1];
+    for(int i =0; i<vertices-1;i++){
+        mstArrayCopy[i]=mstArray[i];
+    }
+
+    return mstArrayCopy;
+}
+
+int Prim::getAnswerSize() {
+    return vertices-1;
 }

@@ -72,7 +72,7 @@ void Generator::generateConnectedGraph() {
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> distWeight(1, 100);
+    std::uniform_int_distribution<int> distWeight(1, 1000000);
 
     while(visited.size()<vertices){
         std::uniform_int_distribution<int> distStart(0, static_cast<int>(visited.size()-1));
