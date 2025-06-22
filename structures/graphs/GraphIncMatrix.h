@@ -11,12 +11,11 @@
 class GraphIncMatrix {
 public:
     GraphIncMatrix(int edges, int vertices, GraphDirection graphDirection);
-    // ~GraphIncMatrix();
 
     void addEdge(int vFrom, int vTo, int weight);
-    Edge* getEdgeArray();   //returns edge array of matrix
-    void print();
-    int** getIncMatrix();
+    [[nodiscard]] Edge* getEdgeArray() const;   //returns edge array from incidence matrix (UNDIRECTED)
+    void print() const;
+    [[nodiscard]] int** getIncMatrix() const;
 
 private:
     void initialize();

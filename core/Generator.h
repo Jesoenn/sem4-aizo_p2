@@ -10,18 +10,17 @@
 
 class Generator {
 public:
-    Generator(int vertices, int density, GraphDirection graphDirection);
+    Generator(int vertices, int density, GraphDirection graphDirection);    //Density is percentage (1,40,100, etc.)
     ~Generator();
     void start();
-    Edge* getEdges();
-    int getEdgeCount();
+    [[nodiscard]] Edge* getEdges() const;   //Get generated array
+    [[nodiscard]] int getEdgeCount() const; //Get number of generated edges
 
 private:
-    //int startingVertex;
     int vertices, edges, currentEdge;
     GraphDirection graphDirection;
-    Edge* edgeArray;
-    bool** adjMatrix;
+    Edge* edgeArray;    //Generated array
+    bool** adjMatrix;   //Adjacency matrix used to check if edge is already generated
 
     void generateConnectedGraph();
     void generateEdges();

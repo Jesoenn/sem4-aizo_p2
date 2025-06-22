@@ -12,12 +12,11 @@
 class GraphAdjList {
 public:
     GraphAdjList(int edges, int vertices, GraphDirection graphDirection);
-    //~GraphAdjList();
 
-    void addEdge(int vFrom, int vTo, int weight);
-    void print();
-    Edge* getEdgeArray();   //convert list to edge array
-    Node** getAdjList();
+    void addEdge(int vFrom, int vTo, int weight) const;
+    void print() const;
+    [[nodiscard]] Edge* getEdgeArray() const;   //convert list to edge array (UNDIRECTED)
+    [[nodiscard]] Node** getAdjList() const;
 
 private:
     void initialize();

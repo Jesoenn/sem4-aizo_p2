@@ -1,18 +1,12 @@
 #include <iostream>
-
-#include "algorithms/BellmanFord.h"
-#include "algorithms/Kruskal.h"
-#include "algorithms/Prim.h"
 #include "core/FileManager.h"
-#include "core/Generator.h"
-#include "algorithms/Dijkstra.h"
 #include "modes/Benchmark.h"
 #include "modes/FileTest.h"
-
 int main(int argc, char* argv[]) {
     if (argc == 1) {
         throw std::invalid_argument("ERROR: --help for more information");
     }
+
     std::string mode = argv[1];
     // BENCHMARK MODE
     //projekt2_aizo.exe --test <graph> <algorithm> <vertices> <density> <outputfile> <printGraph>
@@ -37,6 +31,7 @@ int main(int argc, char* argv[]) {
         std::string outputFile = argv[6];
         int print = std::stoi(argv[7]);
 
+        //Validate
         if (graph < 0 || graph > 1) {
             throw std::invalid_argument("ERROR: Wrong graph");
         }
@@ -55,6 +50,7 @@ int main(int argc, char* argv[]) {
             throw std::invalid_argument("ERROR: Print value must be 0 or 1");
         }
 
+        //Start
         Benchmark benchmark(graph,algorithm,vertices,density,outputFile, print);
         benchmark.start();
     }
@@ -82,6 +78,7 @@ int main(int argc, char* argv[]) {
         std::string outputFile = argv[6];
         int startVertex=0,endVertex=0;
 
+        //Validate
         if (graph < 0 || graph > 1) {
             throw std::invalid_argument("ERROR: Wrong graph");
         }
@@ -102,13 +99,21 @@ int main(int argc, char* argv[]) {
             }
         }
 
+        //Start
         FileTest fileTest(graph,algorithm,inputFile,print,outputFile,startVertex,endVertex);
         fileTest.start();
     } else if (mode == "--help") {
-        std::cout<<"Usage:"<<"\n\tprojekt2_aizo.exe --file\n\tprojekt2_aizo.exe --test\n";
+        std::cout<<"Usage:"
+            <<"\n\tprojekt2_aizo.exe --file"
+            <<"\n\tprojekt2_aizo.exe --file <graph> <algorithm> <inputFile> <printAnswer> <outputFile> [startVertex] [endVertex]"
+            <<"\n\t\tReads graph from a file and solves it using selected algorithm."
+            <<"\n\n\tprojekt2_aizo.exe --test"
+            <<"\n\tprojekt2_aizo.exe --test <graph> <algorithm> <vertices> <density> <outputFile> <printGraph>"
+            <<"\n\t\tGenerates a graph and tests selected algorithm on it.\n";
+
     }
     else {
-        throw std::invalid_argument("ERROR: Wrong mode.");
+        throw std::invalid_argument("ERROR: Wrong mode. --help for more information.");
     }
 
     return 0;

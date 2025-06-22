@@ -4,6 +4,7 @@
 
 #include "Benchmark.h"
 
+#include <iostream>
 #include <stdexcept>
 #include <utility>
 
@@ -17,8 +18,10 @@
 
 Benchmark::Benchmark(int graph, int algorithm, int vertices, int density, std::string outputFile, int printGraph):
     vertices(vertices),
+    edges(-1),
     density(density),
-    outputFile(std::move(outputFile)){
+    outputFile(std::move(outputFile)),
+    time(-1){
 
     switch (graph) {
         case 0: graphType = GraphType::INCIDENCE_MATRIX; break;
@@ -42,7 +45,7 @@ Benchmark::Benchmark(int graph, int algorithm, int vertices, int density, std::s
 }
 
 void Benchmark::start() {
-    FileManager fileManager("","",outputFile);  //save algorithm data
+    FileManager fileManager("","",outputFile);  //used to save algorithm data
 
     GraphDirection graphDirection;
     if (algorithm == AlgorithmType::KRUSKAL || algorithm == AlgorithmType::PRIM) {      //MST problem
@@ -50,6 +53,8 @@ void Benchmark::start() {
     } else {        //Shortest path problem
         graphDirection = GraphDirection::DIRECTED;
     }
+
+    //Initialize algorithm details
     Edge* edgeArray = generateEdges(graphDirection);    //Generate edge array, that is used to create graphs
     int** incMatrix = nullptr;                          //Incidence matrix
     Node** adjList = nullptr;                           //Adjacency list
@@ -84,9 +89,11 @@ Edge* Benchmark::generateEdges(GraphDirection graphDirection) {
     return generator.getEdges();
 }
 
-int ** Benchmark::generateIncMatrix(Edge* edgeArray, GraphDirection graphDirection) {
+int ** Benchmark::generateIncMatrix(const Edge* edgeArray, GraphDirection graphDirection) const {
     GraphIncMatrix graphIncMatrix(edges, vertices, graphDirection);
     std::cout<<"Generating incidence matrix..."<<std::endl;
+
+    //Add each edge to graph
     for (int i =0; i < edges; i++) {
         graphIncMatrix.addEdge(edgeArray[i].from, edgeArray[i].to, edgeArray[i].weight);
     }
@@ -99,9 +106,11 @@ int ** Benchmark::generateIncMatrix(Edge* edgeArray, GraphDirection graphDirecti
     return graphIncMatrix.getIncMatrix();
 }
 
-Node ** Benchmark::generateAdjList(Edge* edgeArray, GraphDirection graphDirection) {
+Node ** Benchmark::generateAdjList(const Edge* edgeArray, GraphDirection graphDirection) const {
     GraphAdjList graphAdjList(edges, vertices, graphDirection);
     std::cout<<"Generating adjacency list..."<<std::endl;
+
+    //Add each edge to graph
     for (int i =0; i < edges; i++) {
         graphAdjList.addEdge(edgeArray[i].from, edgeArray[i].to, edgeArray[i].weight);
     }
@@ -114,11 +123,13 @@ Node ** Benchmark::generateAdjList(Edge* edgeArray, GraphDirection graphDirectio
     return graphAdjList.getAdjList();
 }
 
-void Benchmark::performKruskal(Edge *edgeArray) {
+void Benchmark::performKruskal(const Edge *edgeArray) {
     if (graphType == GraphType::INCIDENCE_MATRIX) {
         //Create graph from generated edges
         GraphIncMatrix graphIncMatrix(edges, vertices, GraphDirection::UNDIRECTED);
         std::cout<<"Generating incidence matrix..."<<std::endl;
+
+        //Add each edge to graph
         for (int i =0; i < edges; i++) {
             graphIncMatrix.addEdge(edgeArray[i].from, edgeArray[i].to, edgeArray[i].weight);
         }
@@ -138,6 +149,8 @@ void Benchmark::performKruskal(Edge *edgeArray) {
     } else {
         //Create graph from generated edges
         GraphAdjList graphAdjList(edges, vertices, GraphDirection::UNDIRECTED);
+
+        //Add each edge to graph
         std::cout<<"Generating adjacency list..."<<std::endl;
         for (int i =0; i < edges; i++) {
             graphAdjList.addEdge(edgeArray[i].from, edgeArray[i].to, edgeArray[i].weight);
@@ -182,7 +195,7 @@ void Benchmark::performPrim(int **incMatrix, Node **adjList) {
 void Benchmark::performDijkstra(int **incMatrix, Node **adjList) {
     // incidence matrix version
     if (incMatrix != nullptr) {
-        Dijkstra dijkstra(vertices,edges,incMatrix);
+        Dijkstra dijkstra(vertices,edges,incMatrix, 0);
         timer.start();
         dijkstra.start();
         timer.stop();
@@ -191,7 +204,7 @@ void Benchmark::performDijkstra(int **incMatrix, Node **adjList) {
     }
     // Adjacency list version
     else {
-        Dijkstra dijkstra(vertices,edges,adjList);
+        Dijkstra dijkstra(vertices,edges,adjList, 0);
         timer.start();
         dijkstra.start();
         timer.stop();
@@ -203,7 +216,7 @@ void Benchmark::performDijkstra(int **incMatrix, Node **adjList) {
 void Benchmark::performBellmanFord(int **incMatrix, Node **adjList) {
     // incidence matrix version
     if (incMatrix != nullptr) {
-        BellmanFord bellmanFord(vertices, edges, incMatrix);
+        BellmanFord bellmanFord(vertices, edges, incMatrix, 0);
         timer.start();
         bellmanFord.start();
         timer.stop();
@@ -212,7 +225,7 @@ void Benchmark::performBellmanFord(int **incMatrix, Node **adjList) {
     }
     // Adjacency list version
     else {
-        BellmanFord bellmanFord(vertices, edges, adjList);
+        BellmanFord bellmanFord(vertices, edges, adjList, 0);
         timer.start();
         bellmanFord.start();
         timer.stop();
@@ -221,13 +234,15 @@ void Benchmark::performBellmanFord(int **incMatrix, Node **adjList) {
     }
 }
 
-void Benchmark::deleteGraph(int** incMatrix, Node** adjList) {
+void Benchmark::deleteGraph(int** incMatrix, Node** adjList) const {
     if (incMatrix != nullptr) {
+        //delete incidence matrix
         for(int i = 0; i<vertices; i++){    //For each row
             delete[] incMatrix[i];          //delete its column
         }
         delete[] incMatrix;                 //delete all rows
     } else if (adjList != nullptr) {
+        //delete adjacency list
         for(int i = 0; i<vertices; i++){    //for each vertex
             Node* temp = adjList[i];        //first neighbour
             while(temp != nullptr){         //delete each neighbour starting from first

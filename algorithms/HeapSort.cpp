@@ -12,7 +12,7 @@ HeapSort::HeapSort(Edge* edgeArr, int size):
 void HeapSort::sort() {
     buildHeap();
     for (int i = size-1; i >= 1; i--) {
-        std::swap(array[0], array[i]);      //put largest element last in heap
+        std::swap(array[0], array[i]);  //put largest element last in heap
         heapSize--;                               //decrement heap size
         heapify(0);                             //heapify from 0, because it was max element changed
     }
@@ -43,7 +43,7 @@ void HeapSort::heapify(int i) {
     }
 }
 
-bool HeapSort::verify() {
+bool HeapSort::verify() const {
     for (int i = 1; i < size; i++) {
         if (array[i].weight < array[i - 1].weight)
             return false;

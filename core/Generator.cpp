@@ -8,9 +8,10 @@
 
 Generator::Generator(int vertices, int density, GraphDirection graphDirection):
     vertices(vertices),
-    graphDirection(graphDirection),
-    currentEdge(0){
-    //Density is percentage (1,40,100, etc.)
+    currentEdge(0),
+    graphDirection(graphDirection){
+
+    //Calculate edges number based on density
     if (graphDirection == GraphDirection::UNDIRECTED) {
         //max edges without cycles * density
         edges = static_cast<int>(vertices*(vertices-1)/2.0*(density/100.0));
@@ -42,22 +43,15 @@ Generator::~Generator() {
 }
 
 void Generator::start() {
-    generateConnectedGraph();
-    generateEdges();
-
-    // std::cout<<"\n\n\n\nGENERATOR\n";
-    // std::cout<<"EDGES: "<<edges<<std::endl<<std::endl;
-    // for (int i =0; i<currentEdge; i++) {
-    //     std::cout<<edgeArray[i].from <<" -> "<<edgeArray[i].to<<" | "<<edgeArray[i].weight<<std::endl;
-    // }
-    // std::cout<<"\n\n\n\n";
+    generateConnectedGraph();   //Firstly generate connected graph
+    generateEdges();            //Then keep generating based on density (number of edges)
 }
 
-Edge * Generator::getEdges() {
+Edge * Generator::getEdges() const {
     return edgeArray;
 }
 
-int Generator::getEdgeCount() {
+int Generator::getEdgeCount() const {
     return edges;
 }
 
@@ -65,26 +59,27 @@ void Generator::generateConnectedGraph() {
     std::vector<int> visited;
     std::vector<int> available;
 
-    visited.push_back(0);   //Start from vertex 0
+    visited.push_back(0);             //Start from vertex 0
     for(int i = 1; i<vertices; i++){    //All vertices from 1 are available
         available.push_back(i);
     }
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> distWeight(1, 1000000);
+    std::uniform_int_distribution<int> distWeight(1, 1000000);  //Generated weight from 1 to 1 000 000
 
+    //Until every vertex is visited
     while(visited.size()<vertices){
         std::uniform_int_distribution<int> distStart(0, static_cast<int>(visited.size()-1));
         std::uniform_int_distribution<int> distEnd(0, static_cast<int>(available.size()-1));
+
         int startIndex = distStart(gen);
         int endIndex = distEnd(gen);
-
         int startVertex = visited.at(startIndex);
         int endVertex = available.at(endIndex);
 
-        visited.push_back(endVertex);
-        available.erase(available.begin()+endIndex);
+        visited.push_back(endVertex);   //End of the edge
+        available.erase(available.begin()+endIndex);    //Remove vertex from available
 
         // Add edge
         edgeArray[currentEdge].to = endVertex;
@@ -92,9 +87,9 @@ void Generator::generateConnectedGraph() {
         edgeArray[currentEdge].weight = distWeight(gen);
         currentEdge++;
 
-        adjMatrix[startVertex][endVertex] = true;
+        adjMatrix[startVertex][endVertex] = true;               //Edge from startVertex -> endVertex
         if (graphDirection == GraphDirection::UNDIRECTED) {
-            adjMatrix[endVertex][startVertex] = true;
+            adjMatrix[endVertex][startVertex] = true;           //Edge from endVertex -> startEdge if graph is undirected
         }
     }
 }
@@ -102,8 +97,9 @@ void Generator::generateConnectedGraph() {
 void Generator::generateEdges() {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> distWeight(1, 100);
+    std::uniform_int_distribution<int> distWeight(1, 1000000);  //Generated weight from 1 to 1 000 000
     std::uniform_int_distribution<int> distVertex(0, vertices-1);
+
     //for directed and undirected
     while (currentEdge<edges) {
         int startVertex = distVertex(gen);
@@ -125,9 +121,9 @@ void Generator::generateEdges() {
         edgeArray[currentEdge].weight = distWeight(gen);
         currentEdge++;
 
-        adjMatrix[startVertex][endVertex] = true;
+        adjMatrix[startVertex][endVertex] = true;               //Edge from startVertex -> endVertex
         if (graphDirection == GraphDirection::UNDIRECTED) {
-            adjMatrix[endVertex][startVertex] = true;
+            adjMatrix[endVertex][startVertex] = true;           //Edge from endVertex -> startEdge if graph is undirected
         }
     }
 }

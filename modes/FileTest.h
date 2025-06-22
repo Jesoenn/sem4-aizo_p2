@@ -31,14 +31,14 @@ private:
     Timer timer;
     int time;           //time it took for algorithm to complete
 
-    int** generateIncMatrix(Edge* edgeArray, GraphDirection graphDirection);
-    Node** generateAdjList(Edge* edgeArray, GraphDirection graphDirection);
+    int** generateIncMatrix(const Edge* edgeArray, GraphDirection graphDirection) const;
+    Node** generateAdjList(const Edge* edgeArray, GraphDirection graphDirection) const;
 
-    Edge* performKruskal(Edge* edgeArray, int &answerEdges);
+    Edge* performKruskal(const Edge* edgeArray, int &answerEdges);
     Edge* performPrim(int** incMatrix, Node** adjList, int &answerEdges);
     Edge* performDijkstra(int** incMatrix, Node** adjList, int &answerEdges);
     Edge* performBellmanFord(int** incMatrix, Node** adjList, int &answerEdges);
-    void deleteGraph(int** incMatrix, Node** adjList);
+    void deleteGraph(int** incMatrix, Node** adjList) const;
 };
 
 

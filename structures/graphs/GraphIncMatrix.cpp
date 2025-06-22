@@ -5,23 +5,13 @@
 #include "GraphIncMatrix.h"
 #include <iostream>
 GraphIncMatrix::GraphIncMatrix(int edges, int vertices, GraphDirection graphDirection):
+        graphDirection(graphDirection),
         edges(edges),
-        vertices(vertices),
-        graphDirection(graphDirection){
+        vertices(vertices){
     lastEdge = 0;
     incMatrix = nullptr;
     initialize();
 }
-
-// GraphIncMatrix::~GraphIncMatrix() {
-//     std::cout<<"Matrix destructor initiated..."<<std::endl;
-//     for(int i = 0; i<vertices; i++){    //For each row
-//         delete[] incMatrix[i];          //delete its column
-//     }
-//     delete[] incMatrix;                 //delete all rows
-//     incMatrix = nullptr;
-//     std::cout<<"Matrix deleted"<<std::endl;
-// }
 
 void GraphIncMatrix::initialize() {
     incMatrix = new int*[vertices];         //rows
@@ -40,6 +30,7 @@ void GraphIncMatrix::addEdge(int vFrom, int vTo, int weight) {
         throw std::invalid_argument("Vertex index out of bounds");
     }
 
+    //Start -weight, End +weight in directed
     if(graphDirection == GraphDirection::DIRECTED){
         incMatrix[vFrom][lastEdge] = -weight;
     } else{
@@ -49,9 +40,10 @@ void GraphIncMatrix::addEdge(int vFrom, int vTo, int weight) {
     lastEdge++;
 }
 
-void GraphIncMatrix::print() {
+void GraphIncMatrix::print() const {
     std::cout<<"\n\nINCIDENCE MATRIX GRAPH REPRESENTATION\n";
     for(int i = 0; i<vertices; i++){
+        std::cout<<i<<":\t";
         for(int j = 0; j<edges; j++){
             std::cout<<incMatrix[i][j]<<"\t";
         }
@@ -60,23 +52,21 @@ void GraphIncMatrix::print() {
     std::cout<<"\n\n";
 }
 
-//This works only on Kruskal/Prim -> elements are always >0 row 71
-Edge* GraphIncMatrix::getEdgeArray() {
+//Works only on undirected graphs (Kruskal/Prim -> weights are always >0)
+Edge* GraphIncMatrix::getEdgeArray() const {
     Edge* edgeArray = new Edge[edges];
     for(int j = 0; j<edges; j++){       //column
         int foundV = 0;                 //which vertex is found
         for(int i=0; i<vertices; i++){  //row
             // save vertices in edge
             if(incMatrix[i][j]!=0){
-
-                //This "if" can be changed, so it works on directed graphs
                 if(foundV == 0){
                     edgeArray[j].from = i;
                     edgeArray[j].weight = incMatrix[i][j];  //undirected graph so weight is always positive
                     foundV++;
                 } else {
                     edgeArray[j].to = i;
-                    break;
+                    break;  //skip to next edge
                 }
             }
         }
@@ -84,7 +74,7 @@ Edge* GraphIncMatrix::getEdgeArray() {
     return edgeArray;
 }
 
-int** GraphIncMatrix::getIncMatrix(){
+int** GraphIncMatrix::getIncMatrix() const {
     return incMatrix;
 }
 

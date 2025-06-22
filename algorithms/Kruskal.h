@@ -7,31 +7,29 @@
 
 
 #include "../structures/Edge.h"
-#include "../enums/GraphType.h"
-#include "../structures/graphs/GraphAdjList.h"
-#include "../structures/graphs/GraphIncMatrix.h"
 
 class Kruskal {
 public:
     Kruskal(int vertices, int edges, Edge* edgeArray);
     ~Kruskal();
     void start();
-    void print();
-    Edge* getAnswerEdges();
-    int getAnswerSize();
+    void print() const;
+    [[nodiscard]] Edge* getAnswerEdges() const;             //returns MST edges
+    [[nodiscard]] int getAnswerSize() const;                //returns MST size
+    bool verifyMST();
 
 private:
     int vertices, edges;
     int* parents;                       //index is vertex, key is parent of each vertex
-    int* ranks;
+    int* ranks;                         //index is vertex, key is rank value
     Edge* edgeArray;
     Edge* mstArray;
 
-    void makeSet(int v);                //set parents for each vertex
-    int findSet(int v);                 //find root of given vertex
-    void unionSets(int v1, int v2);     //combine sets
+    void makeSet(int v) const;              //set parents for each vertex
+    int findSet(int v);                     //find root of given vertex
+    void unionSets(int v1, int v2);         //combine sets
 
-    void sortEdges();                   //from lowest to highest weight
+    void sortEdges() const;                 //from lowest to highest weight
 };
 
 #endif //PROJEKT2_AIZO_KRUSKAL_H

@@ -6,26 +6,12 @@
 #include "GraphAdjList.h"
 
 GraphAdjList::GraphAdjList(int edges, int vertices, GraphDirection graphDirection):
+    graphDirection(graphDirection),
     edges(edges),
-    vertices(vertices),
-    graphDirection(graphDirection) {
+    vertices(vertices) {
     adjList = nullptr;
     initialize();
 }
-// GraphAdjList::~GraphAdjList() {
-//     std::cout<<"Adjacency list destructor initiated..."<<std::endl;
-//     for(int i = 0; i<vertices; i++){    //for each vertex
-//         Node* temp = adjList[i];        //first neighbour
-//         while(temp != nullptr){         //delete each neighbour starting from first
-//             Node* next = temp->nextVertex;
-//             delete temp;
-//             temp = next;
-//         }
-//     }
-//     delete[] adjList;                   //delete array (vertices)
-//     adjList = nullptr;
-//     std::cout<<"Adjacency list deleted"<<std::endl;
-// }
 
 void GraphAdjList::initialize() {
     adjList = new Node*[vertices];      //create array, each index is vertex
@@ -34,14 +20,14 @@ void GraphAdjList::initialize() {
     }
 }
 
-void GraphAdjList::addEdge(int vFrom, int vTo, int weight) {
+void GraphAdjList::addEdge(int vFrom, int vTo, int weight) const {
     if (vFrom < 0 || vFrom >= vertices || vTo < 0 || vTo >= vertices) {
         throw std::invalid_argument("Vertex index out of bounds");
     }
 
-    Node* newNode = new Node(vTo, weight);
-    newNode->nextVertex = adjList[vFrom];   //new neighbour is put as first in adjList
-    adjList[vFrom] = newNode;
+    Node* newNode = new Node(vTo, weight);    //End of the edge
+    newNode->nextVertex = adjList[vFrom];           //new neighbour is put as first in adjList, rest is pushed right
+    adjList[vFrom] = newNode;                       //First neighbour
 
     if(graphDirection == GraphDirection::UNDIRECTED){ //if undirected edge goes both ways
         newNode = new Node(vFrom, weight);
@@ -50,7 +36,7 @@ void GraphAdjList::addEdge(int vFrom, int vTo, int weight) {
     }
 }
 
-void GraphAdjList::print() {
+void GraphAdjList::print() const {
     std::cout<<"\n\nADJACENCY LIST GRAPH REPRESENTATION\n";
     for(int i=0; i<vertices; i++){
         std::cout<<i<<": ";
@@ -67,7 +53,8 @@ void GraphAdjList::print() {
     std::cout<<"\n\n";
 }
 
-Edge* GraphAdjList::getEdgeArray() {
+//Returns edge array, works only for undirected graphs -> Kruskal alg
+Edge* GraphAdjList::getEdgeArray() const {
     Edge* edgeArray = new Edge[edges];
     int edgeIndex = 0;
 
@@ -75,7 +62,8 @@ Edge* GraphAdjList::getEdgeArray() {
     for (int i=0; i < vertices; i++) {
         Node* temp = adjList[i];
         while(temp != nullptr) {
-            //This will work only on undirected graph
+            //This works only on undirected graph
+            //Connect lower vertex number to higher (removes duplicates)
             if (i<temp->vertex) {
                 edgeArray[edgeIndex].from = i;
                 edgeArray[edgeIndex].to = temp->vertex;
@@ -88,6 +76,6 @@ Edge* GraphAdjList::getEdgeArray() {
     return edgeArray;
 }
 
-Node ** GraphAdjList::getAdjList() {
+Node ** GraphAdjList::getAdjList() const {
     return adjList;
 }

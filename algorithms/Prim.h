@@ -6,7 +6,6 @@
 #define PRIM_H
 #include "../enums/GraphType.h"
 #include "../structures/Node.h"
-#include "iostream"
 #include "../structures/Edge.h"
 #include "../structures/MinHeap.h"
 
@@ -17,9 +16,10 @@ public:
     Prim(int vertices, int edges, Node** adjList);
     ~Prim();
     void start();
-    void print();
-    Edge* getAnswerEdges();
-    int getAnswerSize();
+    void print() const;
+    [[nodiscard]] Edge* getAnswerEdges() const;     //return MST edges
+    [[nodiscard]] int getAnswerSize() const;        //returns MST size
+    [[nodiscard]] bool verifyMST() const;
 
 private:
     GraphType graphType;
@@ -28,7 +28,7 @@ private:
     Node** adjList;
     int** incMatrix;
     Edge* mstArray;
-    int mstEdges = 0;
+    int mstEdges = 0;       //number of current mst edges
 
     void adjListVersion(MinHeap& minHeap);
     void incMatrixVersion(MinHeap& minHeap);

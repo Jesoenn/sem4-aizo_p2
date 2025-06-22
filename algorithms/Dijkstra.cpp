@@ -7,21 +7,23 @@
 #include <limits>
 #include <iostream>
 
-Dijkstra::Dijkstra(int vertices, int edges, int** incMatrix):
+Dijkstra::Dijkstra(int vertices, int edges, int** incMatrix, int source):
+    graphType(GraphType::INCIDENCE_MATRIX),
     vertices(vertices),
     edges(edges),
-    incMatrix(incMatrix),
-    graphType(GraphType::INCIDENCE_MATRIX){
+    source(source),
+    incMatrix(incMatrix){
     parent = new int[vertices];
     weights = new int[vertices];
     adjList = nullptr;
 }
 
-Dijkstra::Dijkstra(int vertices, int edges, Node** adjList):
+Dijkstra::Dijkstra(int vertices, int edges, Node** adjList, int source):
+    graphType(GraphType::ADJACENCY_LIST),
     vertices(vertices),
     edges(edges),
-    adjList(adjList),
-    graphType(GraphType::ADJACENCY_LIST){
+    source(source),
+    adjList(adjList){
     parent = new int[vertices];
     weights = new int[vertices];
     incMatrix = nullptr;
@@ -32,7 +34,7 @@ Dijkstra::~Dijkstra(){
     delete[] weights;
 }
 
-void Dijkstra::start(){
+void Dijkstra::start() const {
     initializeSingleSource();
     if(graphType == GraphType::ADJACENCY_LIST){
         adjListVersion();
@@ -41,27 +43,29 @@ void Dijkstra::start(){
     }
 }
 
-void Dijkstra::initializeSingleSource() {
-    parent[0] = 0;
-    weights[0] = 0;
-
-    for(int i = 1; i<vertices; i++){
+void Dijkstra::initializeSingleSource() const {
+    for(int i = 0; i<vertices; i++){
         parent[i] = -1;
         weights[i] = std::numeric_limits<int>::max();   //INF
     }
+
+    //Source has no weight and parent
+    parent[source] = source;
+    weights[source] = 0;
 }
 
-void Dijkstra::adjListVersion() {
+void Dijkstra::adjListVersion() const {
     MinHeap minHeap = MinHeap(vertices);
-    minHeap.buildHeap();
+    minHeap.buildHeap(source);              //Build heap with source key as 0
 
     //Progress bar
     int visitedCount = 0;
     int interval = vertices/20;
     int progress = 5;               // every 5%
 
+    // For every vertex in heap
     while(!minHeap.isEmpty()){
-        int u = minHeap.extractMin();
+        int u = minHeap.extractMin();   //extract vertex with the lowest path weight
 
         visitedCount++;
         if (visitedCount!=0 && vertices>=20 && visitedCount%interval == 0 && progress<=100) {
@@ -69,9 +73,10 @@ void Dijkstra::adjListVersion() {
             progress+=5;
         }
 
-        //For each adjacent vertex
+        //For each adjacent vertex to u
         Node* currentV = adjList[u];
         while(currentV != nullptr){
+            //relax edges
             if(relax(u, currentV->vertex, currentV->weight)){
                 minHeap.setKey(currentV->vertex, weights[currentV->vertex]);
             }
@@ -80,17 +85,18 @@ void Dijkstra::adjListVersion() {
     }
 }
 
-void Dijkstra::incMatrixVersion() {
+void Dijkstra::incMatrixVersion() const {
     MinHeap minHeap = MinHeap(vertices);
-    minHeap.buildHeap();
+    minHeap.buildHeap(source);
 
     //Progress bar
     int visitedCount = 0;
     int interval = vertices/20;
     int progress = 5;               // every 5%
 
+    // For every vertex in heap
     while(!minHeap.isEmpty()){
-        int u = minHeap.extractMin();
+        int u = minHeap.extractMin();   //extract vertex with the lowest path weight
 
         visitedCount++;
         if (visitedCount!=0 && vertices>=20 && visitedCount%interval == 0 && progress<=100) {
@@ -105,6 +111,7 @@ void Dijkstra::incMatrixVersion() {
                 //Search for ending vertex
                 for(int vertex = 0; vertex< vertices; vertex++){
                     if(incMatrix[vertex][currentEdge] > 0){
+                        //relax edge
                         if(relax(u, vertex, incMatrix[vertex][currentEdge])){
                             minHeap.setKey(vertex,weights[vertex]);
                         }
@@ -116,8 +123,9 @@ void Dijkstra::incMatrixVersion() {
     }
 }
 
-bool Dijkstra::relax(int u, int v, int w) {
-    if(weights[v] > weights[u]+w){
+bool Dijkstra::relax(int u, int v, int w) const {
+    //If cost to get to parent is not infinite and new weights make path cost less, then switch parents
+    if(weights[u] != std::numeric_limits<int>::max() && weights[v] > weights[u]+w){
         weights[v] = weights[u]+w;
         parent[v] = u;
         return true;
@@ -125,13 +133,13 @@ bool Dijkstra::relax(int u, int v, int w) {
     return false;
 }
 
-void Dijkstra::print() {
+void Dijkstra::print() const {
     for (int i = 0; i < vertices; i++) {
         std::cout<<"Vertex: "<<i<<"\tWeight: "<<weights[i]<<"\tParent: "<<parent[i]<<std::endl;
     }
 }
 
-Edge * Dijkstra::getPath(int startV, int endV, bool print) {
+Edge * Dijkstra::getPath(int startV, int endV, bool print) const {
     int currentV = endV;                                            //start from last
     int pathLength = getPathLength(startV, endV);
     Edge* pathArray = new Edge[pathLength];
@@ -141,11 +149,11 @@ Edge * Dijkstra::getPath(int startV, int endV, bool print) {
     }
 
     for (int i = pathLength-1; i >= 0; i--) {                       //from last array element to first
-        int weight = weights[currentV]-weights[parent[currentV]];
+        int weight = weights[currentV]-weights[parent[currentV]];   //Edge weight
         pathArray[i].from = parent[currentV];
         pathArray[i].to = currentV;
         pathArray[i].weight = weight;
-        currentV=parent[currentV];
+        currentV=parent[currentV];                                  //Move back from end vertex to start
         if (print) {
             std::cout<<pathArray[i].from<<" ->\t"<<pathArray[i].to<<" ["<<pathArray[i].weight<<"]"<<std::endl;
         }
@@ -156,17 +164,22 @@ Edge * Dijkstra::getPath(int startV, int endV, bool print) {
     return pathArray;
 }
 
-int Dijkstra::getPathLength(int startV, int endV) {
+int Dijkstra::getPathLength(int startV, int endV) const {
     int currentV = endV;
     int pathLength = 0;
 
     //Calculate path length for path array elements
+    //Loop from end vertex until starting vertex is reached
     while (currentV != startV && currentV >= 0 && currentV < vertices) {
         currentV = parent[currentV];
         pathLength++;
     }
 
+    //At the end of the loop currentV should be startV. If it's not, then end vertex is not reachable
+    if (currentV != startV) {
+        std::string errorMsg = "Vertex "+std::to_string(endV)+" is not reachable from vertex "+std::to_string(startV);
+        throw std::invalid_argument(errorMsg);
+    }
+
     return pathLength;
 }
-
-

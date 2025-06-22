@@ -12,11 +12,8 @@ FileManager::FileManager(std::string inputFileName, std::string outputFileName, 
     outputFileName(std::move(outputFileName)),
     saveDataFileName(std::move(saveDataFileName)){}
 
-FileManager::~FileManager() {
-
-}
-
-Edge * FileManager::readFile() {
+//Read edges from given file
+Edge * FileManager::readFile() const {
     int input;
     std::ifstream file(inputFileName);
 
@@ -33,6 +30,7 @@ Edge * FileManager::readFile() {
     int from, to, weight;
 
     while (file>>from) {
+        //Validate number of read edges
         if (currentEdge >= edgeCount) {
             delete[] edgeArray;
             std::cerr << "More edges than expected!" << std::endl;
@@ -44,12 +42,15 @@ Edge * FileManager::readFile() {
             std::cerr << "Error reading edge data!" << std::endl;
             return nullptr;
         }
+
+        //Add edge to array
         edgeArray[currentEdge].from = from;
         edgeArray[currentEdge].to = to;
         edgeArray[currentEdge].weight = weight;
         currentEdge++;
     }
 
+    //Validate number of read edges
     if (currentEdge < edgeCount) {
         delete[] edgeArray;
         std::cerr << "Less edges than expected!" << std::endl;
@@ -60,7 +61,7 @@ Edge * FileManager::readFile() {
     return edgeArray;
 }
 
-int FileManager::getEdgeCount() {
+int FileManager::getEdgeCount() const {
     std::ifstream file(inputFileName);
     if (!file.is_open()) {
         std::cerr << "Cannot open file. Wrong edge count!" << std::endl;
@@ -73,7 +74,7 @@ int FileManager::getEdgeCount() {
     return edgeCount;
 }
 
-int FileManager::getVerticesCount() {
+int FileManager::getVerticesCount() const {
     std::ifstream file(inputFileName);
     if (!file.is_open()) {
         std::cerr << "Cannot open file. Wrong vertices count!" << std::endl;
@@ -81,19 +82,20 @@ int FileManager::getVerticesCount() {
     }
 
     int verticesCount = 0;
-    file >> verticesCount >> verticesCount;  // odczytaj obie liczby, ale zwróć drugą
+    file >> verticesCount >> verticesCount;  // Read both numbers but return second
     file.close();
     return verticesCount;
 }
 
-void FileManager::saveData(AlgorithmType algorithm, GraphType graphType, int vertices, int density, int time) {
+// Save algorithm results
+void FileManager::saveData(AlgorithmType algorithm, GraphType graphType, int vertices, int density, int time) const {
     std::ofstream file(saveDataFileName, std::ios::app);
     if (!file.is_open()) {
         std::cout << "Cannot open/create data file." << std::endl;
         return;
     }
 
-    //Algorytm | Graf | wierzcholki | gestosc | czas
+    //Algorithm | Graph | Vertices | Density | Time[ms]
     file << toString(algorithm) << "\t"
     <<  toString(graphType) << "\t"
     << vertices << "\t"
@@ -103,7 +105,8 @@ void FileManager::saveData(AlgorithmType algorithm, GraphType graphType, int ver
     file.close();
 }
 
-void FileManager::saveResult(int vertices, int edges, Edge *edgeArray) {
+// Save algorithm result (graph) in given file
+void FileManager::saveResult(int vertices, int edges, const Edge *edgeArray) const {
     std::ofstream file(outputFileName);
     if (!file.is_open()) {
         std::cout << "Cannot open/create data file." << std::endl;

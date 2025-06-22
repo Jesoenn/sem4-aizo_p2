@@ -11,7 +11,7 @@ class HeapSort {
 public:
     HeapSort(Edge* edgeArr, int size);
     void sort();
-    bool verify();
+    [[nodiscard]] bool verify() const;
 private:
     void buildHeap();
     void heapify(int i);

@@ -6,21 +6,23 @@
 #include <limits>
 #include <iostream>
 
-BellmanFord::BellmanFord(int vertices, int edges, int **incMatrix):
+BellmanFord::BellmanFord(int vertices, int edges, int **incMatrix, int source):
+    graphType(GraphType::INCIDENCE_MATRIX),
     vertices(vertices),
     edges(edges),
-    incMatrix(incMatrix),
-    graphType(GraphType::INCIDENCE_MATRIX){
+    source(source),
+    incMatrix(incMatrix){
     parent = new int[vertices];
     weights = new int[vertices];
     adjList = nullptr;
 }
 
-BellmanFord::BellmanFord(int vertices, int edges, Node **adjList):
+BellmanFord::BellmanFord(int vertices, int edges, Node **adjList, int source):
+    graphType(GraphType::ADJACENCY_LIST),
     vertices(vertices),
     edges(edges),
-    adjList(adjList),
-    graphType(GraphType::ADJACENCY_LIST){
+    source(source),
+    adjList(adjList){
     parent = new int[vertices];
     weights = new int[vertices];
     incMatrix = nullptr;
@@ -31,7 +33,7 @@ BellmanFord::~BellmanFord() {
     delete[] parent;
 }
 
-void BellmanFord::start() {
+void BellmanFord::start() const {
     initializeSingleSource();
     if(graphType == GraphType::ADJACENCY_LIST){
         adjListVersion();
@@ -40,24 +42,27 @@ void BellmanFord::start() {
     }
 }
 
-void BellmanFord::adjListVersion() {
+void BellmanFord::adjListVersion() const {
     //Progress bar
-    int interval = vertices/20;
-    int progress = 5;               // every 5%
+    int interval = vertices/100;
+    int progress = 1;               // every 5%
 
-    bool cycleChanged;
     //vertices - 1 iterations of bellman ford
     for(int i=0; i<vertices-1; i++){
         //Progress bar
-        if (i!=0 && vertices>=20 && i%interval == 0) {
+        std::cout<<"Iteration: "<<i<<std::endl;
+        if (i!=0 && vertices>=100 && i%interval == 0) {
             std::cout<<"BellmanFord progress: "<<progress<<"%"<<std::endl;
-            progress+=5;
+            progress+=1;
         }
 
-        cycleChanged = false;
+        bool cycleChanged = false;
         for(int u=0; u<vertices; u++){  //for each vertex and its neighbours
             Node* currentVertex = adjList[u];
+
+            //for every neighbour of u
             while(currentVertex != nullptr){
+                //relax edge
                 if (relax(u,currentVertex->vertex, currentVertex->weight)) {
                     cycleChanged = true;
                 }
@@ -71,36 +76,41 @@ void BellmanFord::adjListVersion() {
     std::cout<<"BellmanFord progress: 100%"<<std::endl;
 }
 
-void BellmanFord::incMatrixVersion() {
+void BellmanFord::incMatrixVersion() const {
     //Progress bar
-    int interval = vertices/20;
-    int progress = 5;               // every 5%
+    int interval = vertices/100;
+    int progress = 1;               // every 5%
 
-    bool cycleChanged;
+    //vertices - 1 iterations of bellman ford
     for(int i=0; i<vertices-1; i++) {
         //Progress bar
-        if (i!=0 && vertices>=20 && i%interval == 0) {
+        std::cout<<"Iteration: "<<i<<std::endl;
+        if (i!=0 && vertices>=100 && i%interval == 0) {
             std::cout<<"BellmanFord progress: "<<progress<<"%"<<std::endl;
-            progress+=5;
+            progress+=1;
         }
 
-        cycleChanged = false;
+        bool cycleChanged = false;
         for(int edge=0; edge<edges; edge++) {
             int u=-1,v=-1,weight=0;
 
-            //Find vertices and weight
+            //Find vertices and weight of edge in iteration
+            //Iterate through rows (vertices)
             for (int vertex=0; vertex < vertices; vertex++) {
                 if (incMatrix[vertex][edge] < 0) {
-                    u = vertex;
+                    u = vertex; //beginning of edge
                 } else if (incMatrix[vertex][edge] > 0) {
-                    v = vertex;
+                    v = vertex; //ending of edge
                     weight = incMatrix[vertex][edge];
                 }
+
+                //if edge is found end loop
                 if (v != -1 && u != -1) {
                     break;
                 }
             }
 
+            //relax edge
             if (relax(u,v,weight)) {
                 cycleChanged = true;
             }
@@ -113,17 +123,19 @@ void BellmanFord::incMatrixVersion() {
     std::cout<<"BellmanFord progress: 100%"<<std::endl;
 }
 
-void BellmanFord::initializeSingleSource() {
-    parent[0] = 0;
-    weights[0] = 0;
-
-    for(int i = 1; i<vertices; i++){
+void BellmanFord::initializeSingleSource() const {
+    for(int i = 0; i<vertices; i++){
         parent[i] = -1;
         weights[i] = std::numeric_limits<int>::max();   //INF
     }
+
+    //Source has no weight and parent
+    parent[source] = source;
+    weights[source] = 0;
 }
 
-bool BellmanFord::relax(int u, int v, int w) {
+bool BellmanFord::relax(int u, int v, int w) const {
+    //If cost to get to parent is not infinite and new weights make path cost less, then switch parents
     if(weights[u] != std::numeric_limits<int>::max() && weights[v] > weights[u]+w){
         weights[v] = weights[u]+w;
         parent[v] = u;
@@ -132,13 +144,13 @@ bool BellmanFord::relax(int u, int v, int w) {
     return false;
 }
 
-void BellmanFord::print() {
+void BellmanFord::print() const {
     for (int i = 0; i < vertices; i++) {
         std::cout<<"Vertex: "<<i<<"\tWeight: "<<weights[i]<<"\tParent: "<<parent[i]<<std::endl;
     }
 }
 
-Edge * BellmanFord::getPath(int startV, int endV, bool print) {
+Edge * BellmanFord::getPath(int startV, int endV, bool print) const {
     int currentV = endV;                                            //start from last
     int pathLength = getPathLength(startV, endV);
     Edge* pathArray = new Edge[pathLength];
@@ -148,11 +160,11 @@ Edge * BellmanFord::getPath(int startV, int endV, bool print) {
     }
 
     for (int i = pathLength-1; i >= 0; i--) {                       //from last array element to first
-        int weight = weights[currentV]-weights[parent[currentV]];
+        int weight = weights[currentV]-weights[parent[currentV]];   //Edge weight
         pathArray[i].from = parent[currentV];
         pathArray[i].to = currentV;
         pathArray[i].weight = weight;
-        currentV=parent[currentV];
+        currentV=parent[currentV];                                  //Move back from end vertex to start
         if (print) {
             std::cout<<pathArray[i].from<<" ->\t"<<pathArray[i].to<<" ["<<pathArray[i].weight<<"]"<<std::endl;
         }
@@ -163,14 +175,21 @@ Edge * BellmanFord::getPath(int startV, int endV, bool print) {
     return pathArray;
 }
 
-int BellmanFord::getPathLength(int startV, int endV) {
+int BellmanFord::getPathLength(int startV, int endV) const {
     int currentV = endV;
     int pathLength = 0;
 
     //Calculate path length for path array elements
+    //Loop from end vertex until starting vertex is reached
     while (currentV != startV && currentV >= 0 && currentV < vertices) {
         currentV = parent[currentV];
         pathLength++;
+    }
+
+    //At the end of the loop currentV should be startV. If it's not, then end vertex is not reachable
+    if (currentV != startV) {
+        std::string errorMsg = "Vertex "+std::to_string(endV)+" is not reachable from vertex "+std::to_string(startV);
+        throw std::invalid_argument(errorMsg);
     }
 
     return pathLength;

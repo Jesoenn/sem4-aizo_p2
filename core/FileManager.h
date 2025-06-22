@@ -15,19 +15,16 @@ class FileManager {
 public:
     FileManager(std::string inputFileName, std::string outputFileName, std::string saveDataFileName);
 
-    ~FileManager();
-    Edge* readFile();
-    int getEdgeCount();
-    int getVerticesCount();
-    void saveData(AlgorithmType algorithm, GraphType graphType, int vertices, int density, int time);
-    void saveResult(int vertices, int edges, Edge* edgeArray);
-
-    //Zapisac -> ALGORYTM TYPGRAFU WIERZCHOLKI DENSITY CZAS
+    [[nodiscard]] Edge* readFile() const;   //Read edges from given file
+    [[nodiscard]] int getEdgeCount() const;
+    [[nodiscard]] int getVerticesCount() const;
+    void saveData(AlgorithmType algorithm, GraphType graphType, int vertices, int density, int time) const;   // Save algorithm results
+    void saveResult(int vertices, int edges, const Edge* edgeArray) const;  // Save algorithm result (graph) in given file
 
 private:
     const std::string inputFileName,outputFileName,saveDataFileName;
-    std::string toString(AlgorithmType algorithm);
-    std::string toString(GraphType graphType);
+    static std::string toString(AlgorithmType algorithm);
+    static std::string toString(GraphType graphType);
 };
 
 

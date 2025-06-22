@@ -12,22 +12,22 @@
 
 class Dijkstra {
 public:
-    Dijkstra(int vertices, int edges, int** incMatrix);
-    Dijkstra(int vertices, int edges, Node** adjList);
+    Dijkstra(int vertices, int edges, int** incMatrix, int source);
+    Dijkstra(int vertices, int edges, Node** adjList, int source);
     ~Dijkstra();
-    void start();
-    void print();
-    Edge* getPath(int startV, int endV, bool print);
-    int getPathLength(int startV, int endV);
+    void start() const;
+    void print() const;
+    [[nodiscard]] Edge* getPath(int startV, int endV, bool print) const;
+    [[nodiscard]] int getPathLength(int startV, int endV) const;
 
 private:
-    void initializeSingleSource();
-    void incMatrixVersion();
-    void adjListVersion();
-    bool relax(int u, int v, int w);
+    void initializeSingleSource() const;
+    void incMatrixVersion() const;
+    void adjListVersion() const;
+    [[nodiscard]] bool relax(int u, int v, int w) const;
 
     GraphType graphType;
-    int vertices,edges;
+    int vertices,edges,source;
 
     Node** adjList;
     int** incMatrix;
